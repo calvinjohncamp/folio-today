@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folio.today — Das tägliche Briefing</title>
+<link rel="icon" type="image/png" href="folio-today-transparent.png?v=1">
+<link rel="apple-touch-icon" href="folio-today-transparent.png?v=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Folio.today">
+<meta name="theme-color" content="#14202A">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14202A; --bg2:#101A22; --card:#1A2A34; --card2:#21333E;
+  --line:rgba(225,238,242,.13); --line2:rgba(225,238,242,.07);
+  --text:#EAF2F4; --soft:#C2D2D8; --muted:#86A0AA;
+  --accent:#FF7A2F; --teal:#74C8E4; --pos:#54D6A6; --neg:#FF7A2F;
+  --serif:'DM Serif Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif; --mono:'Space Grotesk',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 500px at 70% -5%,rgba(255,122,47,.10),transparent 60%),linear-gradient(180deg,#14202A,#0F1920);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+
+.cover{padding:30px 0 16px}
+.cover .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--teal)}
+.cover .rule{height:2px;background:linear-gradient(90deg,var(--accent),transparent 65%);margin:10px 0 16px;border-radius:2px}
+.logo-img{height:clamp(48px,8vw,82px);width:auto;display:block}
+.cover .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+
+.topbar{position:sticky;top:0;z-index:80;background:rgba(15,25,32,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.tb-in{display:flex;align-items:center;gap:14px;height:54px}
+.tb-logo-img{height:24px;width:auto;display:block;flex-shrink:0}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent)}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:7px 11px;border-radius:999px;white-space:nowrap;transition:.15s;border:1px solid transparent}
+.tabs a:hover{color:var(--text);background:var(--card)}
+.tabs a.active{color:#0F1920;background:var(--accent);font-weight:600}
+.tb-ctrl{display:flex;gap:7px;flex-shrink:0}
+.btn{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--soft);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--text)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#0F1920}
+.btn.pdf{border-color:var(--teal);color:var(--teal)}
+.btn.pdf:hover{background:var(--teal);color:#0F1920}
+@media(max-width:720px){.tb-ctrl .lbl{display:none}}
+
+main{padding:26px 0 64px}
+.mag{display:flex;align-items:flex-end;gap:16px;margin:0 0 18px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.mag .num{font-family:var(--serif);font-size:clamp(34px,5vw,54px);line-height:.8;color:transparent;-webkit-text-stroke:1.4px var(--accent);letter-spacing:-2px}
+.mag .ttl .ey{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.mag .ttl h2{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);font-weight:400;line-height:1;letter-spacing:-.4px}
+.mag .tag{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border:1px solid var(--line);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.ressort{margin-bottom:42px;scroll-margin-top:72px}
+
+.card{position:relative;background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;transition:transform .18s,border-color .18s,box-shadow .18s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);border-color:rgba(255,122,47,.45);box-shadow:0 14px 34px rgba(0,0,0,.28)}
+.card .kick{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:9px}
+.card h3{font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.18;letter-spacing:-.2px;margin-bottom:7px}
+.card p{font-size:13.5px;color:var(--soft);line-height:1.55;flex:1}
+.card .more{margin-top:11px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent)}
+.card .more .s{color:var(--muted);font-weight:400}
+
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.b1{grid-column:1/3;grid-row:1/3}.b2{grid-column:3;grid-row:1}.b3{grid-column:3;grid-row:2}
+.b4{grid-column:1;grid-row:3}.b5{grid-column:2;grid-row:3}.b6{grid-column:3;grid-row:3}
+.b1{background:radial-gradient(700px 300px at 0% 0%,rgba(255,122,47,.14),transparent 60%),linear-gradient(180deg,var(--card),var(--card2));border-color:rgba(255,122,47,.4)}
+.b1 .kick{color:var(--accent)} .b1 h3{font-size:clamp(24px,3vw,34px);line-height:1.05} .b1 p{font-size:15px}
+@media(max-width:760px){.bento{grid-template-columns:1fr}.bento .card{grid-column:auto!important;grid-row:auto!important}}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid .lead{grid-column:span 2} .grid .lead h3{font-size:22px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.grid .lead{grid-column:auto}}
+
+.feature{background:radial-gradient(800px 320px at 100% 0%,rgba(116,200,228,.12),transparent 60%),linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:18px;padding:24px}
+.feature .ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:4px}
+.feature h3{font-family:var(--serif);font-size:28px;font-weight:400}
+.feature .sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
+.chip-warn{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(255,122,47,.4);border-radius:6px;padding:4px 9px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:16px 0}
+@media(max-width:560px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--card);padding:12px 14px;text-align:center}
+.metric .l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.metric .v{font-size:18px;font-weight:700} .metric .v.pos{color:var(--pos)} .metric .v.neg{color:var(--neg)}
+.feature .body{font-size:14px;color:var(--soft);line-height:1.6;margin-bottom:14px;max-width:74ch}
+.cc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.cc{grid-template-columns:1fr}}
+.cc h4{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+.cc.ch h4{color:var(--pos)} .cc.ri h4{color:var(--neg)}
+.cc ul{list-style:none} .cc li{position:relative;font-size:13px;color:var(--soft);padding:3px 0 3px 14px;line-height:1.45}
+.cc li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+.cc.ch li::before{background:var(--pos)} .cc.ri li::before{background:var(--neg)}
+
+.maerkte{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media(max-width:760px){.maerkte{grid-template-columns:repeat(3,1fr)}}
+.mk{background:var(--card);padding:12px;text-align:center}
+.mk .l{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.mk .v{font-size:15px;font-weight:700} .mk .v.pos{color:var(--pos)} .mk .v.neg{color:var(--neg)}
+
+.pods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.pods{grid-template-columns:1fr}}
+.pod{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px}
+.pod .n{font-family:var(--serif);font-size:30px;line-height:.8;color:transparent;-webkit-text-stroke:1.2px var(--teal)}
+.pod h3{font-size:15px;font-weight:700;margin-bottom:3px} .pod p{font-size:12.5px;color:var(--soft);line-height:1.45;margin-bottom:7px}
+.pod a{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)}
+
+.zitat{background:linear-gradient(120deg,rgba(116,200,228,.08),transparent);border-left:3px solid var(--teal);border-radius:0 14px 14px 0;padding:22px 26px}
+.zitat blockquote{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3vw,30px);line-height:1.3}
+.zitat cite{display:block;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--muted);font-style:normal}
+
+footer{border-top:1px solid var(--line);padding:24px 0 48px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
+.ribbon{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(255,122,47,.4);border-radius:6px;padding:3px 9px}
+
+body.compact .grid .card:nth-child(n+3){display:none}
+body.compact .bento .card:nth-child(n+4){display:none}
+body.compact .pods .pod:nth-child(n+4){display:none}
+.pb{break-before:page}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#111;font-size:10.5pt}
+  .no-print{display:none!important} .topbar{display:none}
+  .wrap{max-width:none;padding:0}
+  .cover{padding:0 0 8px} .cover .meta,.cover .eyebrow{color:#555}
+  .logo-img{filter:none}
+  .mag{border-color:#bbb} .mag .ttl h2{color:#111} .mag .ttl .ey,.mag .tag{color:#666}
+  .card,.feature,.pod{background:#faf9f7!important;border-color:#ddd!important;box-shadow:none!important;break-inside:avoid}
+  .card h3,.feature h3,.pod h3,.zitat blockquote{color:#111}
+  .card p,.feature .body,.cc li,.pod p{color:#333} .card .kick{color:#b8631f}
+  .b1{background:#faf9f7!important;border-color:#ddd!important}
+  .metrics,.maerkte{background:#ddd} .metric,.mk{background:#fff} .zitat{background:none}
+  body.compact .grid .card:nth-child(n+3),body.compact .bento .card:nth-child(n+4),body.compact .pods .pod:nth-child(n+4){display:flex}
+}
+</style>
+</head>
+<body class="full">
+
+<header class="cover">
+  <div class="wrap">
+    <div class="eyebrow">Das tägliche Briefing</div>
+    <div class="rule"></div>
+    <img class="logo-img" src="folio-today-transparent.png" alt="Folio.news">
+    <div class="meta">
+      <span id="standLabel">—</span>
+      <span>Stand der letzten 24 Stunden · <span class="ribbon" id="quellLabel">Vorschau · Beispielinhalte</span></span>
+    </div>
+  </div>
+</header>
+
+<div class="topbar">
+  <div class="wrap"><div class="tb-in">
+    <img class="tb-logo-img" src="folio-today-transparent.png" alt="Folio.news">
+    <nav class="tabs" id="tabs"></nav>
+    <div class="tb-ctrl no-print">
+      <button class="btn" id="modeBtn" onclick="toggleMode()"><span class="lbl">Kompakt</span><span style="display:none">Voll</span></button>
+      <button class="btn pdf" onclick="window.print()">PDF</button>
+    </div>
+  </div></div>
+</div>
+
+<main><div class="wrap" id="paper"></div></main>
+
+<footer><div class="wrap">
+  FOLIO.TODAY — automatisch kuratiertes Tagesbriefing. Alle Texte redaktionell neu formuliert; Links führen zu den Originalquellen.<br>
+  <span id="footStand"></span> · Impressum/Verantwortlich: wird ergänzt.
+</div></footer>
+
+<script>
+/* ====== Datenmodell ====== Worker schreibt exakt dieses Schema nach Supabase `folio_news`. */
+const SB_URL='https://ywfpzdniicfrhnrvfqfe.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3ZnB6ZG5paWNmcmhucnZmcWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0Mjc4ODcsImV4cCI6MjA5MTAwMzg4N30.St-f48-kfbmlN_QlAKtv-JbbLQYu5IaPmiPO7pyYQ9A';
+
+const SEED = {
+  stand:'Donnerstag · 25. Juni 2026 · 06:30 Uhr',
+  heisser:[
+    {kick:'Aufmacher · tagesschau',h:'Rekordnacht: wärmste Juni-Nacht seit Beginn der Messungen',p:'Mancherorts fiel das Thermometer nicht unter 24 Grad — Meteorologen sprechen vom heißesten Start in einen Sommer, der je gemessen wurde.',src:'tagesschau'},
+    {kick:'DWDL',h:'Serienfinale bricht alle Streaming-Rekorde',p:'Mehr Abrufe in 24 h als je zuvor — die Aktie zog an.',src:'DWDL'},
+    {kick:'kicker',h:'DFB-Frauen drehen Test in der Nachspielzeit',p:'Zwei späte Tore, große Erleichterung vor dem Turnier.',src:'kicker'},
+    {kick:'heise',h:'KI-Brille für unter 300 €',p:'Kampfpreis bringt die Konkurrenz in Zugzwang.',src:'heise'},
+    {kick:'Spiegel',h:'Musiklegende mit 82 gestorben',p:'Stars und Fans trauern weltweit.',src:'Spiegel'},
+    {kick:'n-tv',h:'Erdbeben erschüttert Region',p:'Hilfsorganisationen mobilisieren, Ausmaß noch unklar.',src:'n-tv'}
+  ],
+  ressorts:{
+    politik:{no:'01',ey:'Ressort',title:'Politik & Welt',tag:'5 Themen',items:[
+      {kick:'tagesschau · Diplomatie',h:'Gipfeltreffen endet mit vorsichtiger Annäherung',p:'Konkrete Beschlüsse blieben aus, doch beide Seiten kündigten weitere Gespräche an — Beobachter werten allein den Ton als Fortschritt.',src:'tagesschau'},
+      {kick:'ZEIT',h:'Neue Migrationszahlen befeuern Debatte',p:'Regierung und Opposition deuten dieselbe Statistik gegensätzlich.',src:'ZEIT'},
+      {kick:'FAZ',h:'Wahlausgang mit Folgen für Europa',p:'Das Ergebnis verschiebt Mehrheiten in Brüssel.',src:'FAZ'}
+    ]},
+    wirtschaft:{no:'02',ey:'Ressort',title:'Wirtschaft & Unternehmen',tag:'5 Themen',items:[
+      {kick:'n-tv · Konjunktur',h:'Ifo-Index steigt den dritten Monat in Folge',p:'Die Stimmung in den Chefetagen hellt sich auf — von einem echten Aufschwung will dennoch niemand sprechen.',src:'n-tv'},
+      {kick:'Reuters',h:'Großfusion in der Logistik',p:'Zwei Schwergewichte bündeln Kräfte — Kartellwächter schauen hin.',src:'Reuters'},
+      {kick:'tagesschau',h:'Tarifeinigung im Einzelhandel',p:'Mehr Geld in zwei Stufen nach langer Schlichtung.',src:'tagesschau'}
+    ]},
+    boerse:{no:'04',ey:'Ressort',title:'Börse & Finanzen',tag:'+ Märkte-Schnappschuss',items:[
+      {kick:'CNBC · Geldpolitik',h:'Notenbank deutet längere Zinspause an',p:'Die Märkte reagierten verhalten positiv, Anleiherenditen gaben leicht nach — der Fokus wandert zur nächsten Inflationszahl.',src:'CNBC'},
+      {kick:'Finanzen.net',h:'Gold nahe Rekordhoch',p:'Sichere Häfen sind gefragt, geopolitische Unsicherheit treibt.',src:'Finanzen.net'}
+    ]},
+    sport:{no:'05',ey:'Ressort',title:'Sport',tag:'Fußball & mehr',items:[
+      {kick:'kicker · Transfer',h:'Transfer-Hammer: Topstürmer wechselt die Liga',p:'Die Ablöse sprengt den Vereinsrekord — Fans feiern, Experten sind gespalten, der Aufsichtsrat schweigt.',src:'kicker'},
+      {kick:'Sportschau',h:'Deutsche Hoffnung im Achtelfinale',p:'In vier Sätzen souverän weiter.',src:'Sportschau'},
+      {kick:'n-tv Sport',h:'Formel 1: Quali-Bestzeit',p:'Hauchdünner Vorsprung verspricht ein enges Rennen.',src:'n-tv'}
+    ]},
+    promi:{no:'06',ey:'Ressort',title:'Promi & People',tag:'5 Themen',items:[
+      {kick:'Spiegel Panorama',h:'Hollywood-Paar bestätigt Verlobung — auf Umwegen',p:'Medienberichten zufolge soll ein Ring auf einem Foto die Spekulationen ausgelöst haben; bestätigt wurde es spät am Abend.',src:'Spiegel'},
+      {kick:'n-tv',h:'Pop-Ikone kündigt Welttournee an',p:'Vorverkauf startet diese Woche — Ansturm erwartet.',src:'n-tv'},
+      {kick:'Bunte',h:'Royaler Auftritt sorgt für Gesprächsstoff',p:'Ein Detail am Rande beschäftigt die sozialen Medien.',src:'Bunte'}
+    ]},
+    film:{no:'07',ey:'Ressort',title:'Film, Serien & Streaming',tag:'5 Themen',items:[
+      {kick:'DWDL · Serien',h:'Neue Staffel der Kult-Serie startet mit Cliffhanger',p:'Die ersten Kritiken sind euphorisch, der Anbieter meldet einen Rekordauftakt — und kündigt direkt die nächste Staffel an.',src:'DWDL'},
+      {kick:'Variety',h:'Blockbuster knackt Kassen-Marke',p:'Trotz schwacher Kritiken stürmt das Publikum die Kinos.',src:'Variety'},
+      {kick:'heise',h:'Streaming-Dienst erhöht die Preise',p:'Mehr Eigenproduktionen als Trostpflaster.',src:'heise'}
+    ]},
+    genuss:{no:'08',ey:'Ressort',title:'Essen, Genuss & Reisen',tag:'5 Themen',items:[
+      {kick:'SZ Magazin · Kulinarik',h:'Guide kürt das Restaurant des Jahres — eine Überraschung',p:'Ein kleines Lokal abseits der Metropolen setzt sich gegen die etablierte Spitze durch; der Andrang dürfte gewaltig werden.',src:'SZ Magazin'},
+      {kick:'GEO',h:'Geheimtipp-Insel boomt',p:'Was Reisende lockt — und warum Einheimische zwiegespalten sind.',src:'GEO'},
+      {kick:'Essen & Trinken',h:'Diese Zutat erlebt ein Comeback',p:'Von der Spitzenküche bis ins Supermarktregal.',src:'E&T'}
+    ]},
+    tech:{no:'09',ey:'Ressort',title:'Tech & KI',tag:'4 Themen',items:[
+      {kick:'heise · KI',h:'Neues KI-Modell soll schneller und günstiger sein',p:'Erste Benchmarks wirken stark — unabhängige Tests stehen aus, die Konkurrenz reagiert bereits nervös.',src:'heise'},
+      {kick:'The Verge',h:'Smartphone-Start verschoben',p:'Lieferprobleme bremsen, die Konkurrenz nutzt die Lücke.',src:'The Verge'}
+    ]},
+    gesundheit:{no:'10',ey:'Ressort',title:'Gesundheit & Fitness',tag:'4 Themen',items:[
+      {kick:'Apotheken Umschau · Studie',h:'Schon kurze Bewegungseinheiten zeigen große Wirkung',p:'Forschende berichten von messbaren Effekten bereits bei wenigen Minuten täglich — gut für alle ohne Zeit fürs Fitnessstudio.',src:'Apotheken Umschau'},
+      {kick:'Spektrum',h:'Neuer Ansatz in der Schlafforschung',p:'Was den Tiefschlaf fördert — und welche Mythen fallen.',src:'Spektrum'}
+    ]},
+    panorama:{no:'11',ey:'Ressort',title:'Panorama / Viral',tag:'Kurioses',items:[
+      {kick:'Spiegel Panorama · Viral',h:'Video aus einer Kleinstadt geht um die Welt',p:'Millionen Klicks in 24 Stunden — die Hintergrundgeschichte ist noch schöner als der Clip selbst.',src:'Spiegel'},
+      {kick:'n-tv',h:'Alltagsgegenstand erzielt absurde Summe',p:'Was den Bieterkrieg auslöste — und wer den Zuschlag bekam.',src:'n-tv'}
+    ]}
+  },
+  unternehmen:{no:'03',name:'NovaGrid SE',sub:'ENERGIE-INFRASTRUKTUR · WKN A2XYZ9 · ISIN DE000A2XYZ97 · XETRA',
+    metrics:[{l:'Kurs',v:'48,20 €'},{l:'Heute',v:'+2,4 %',cls:'pos'},{l:'Marktkap.',v:'6,1 Mrd €'},{l:'KGV 2026e',v:'18,5'}],
+    body:'Nach einem Großauftrag für Netzspeicher hoben gleich zwei Analystenhäuser ihre Kursziele an. Im Fokus: Wandelt sich die volle Auftragspipeline auch in steigende Margen — oder ist die Bewertung schon vorausgeeilt?',
+    chancen:['Rekord-Auftragsbestand bis 2028 gefüllt','Politischer Rückenwind durch Netzausbau','Wiederkehrende Wartungserlöse stabilisieren'],
+    risiken:['Lieferengpässe bei Spezialkomponenten','Hohe Bewertung, wenig Spielraum','Zinssensitiv, kapitalintensiv']},
+  maerkte:[{l:'DAX',v:'+0,7%',cls:'pos'},{l:'Dow',v:'+0,3%',cls:'pos'},{l:'Nasdaq',v:'−0,4%',cls:'neg'},{l:'S&P 500',v:'−0,1%',cls:'neg'},{l:'Bitcoin',v:'+1,9%',cls:'pos'},{l:'Gold',v:'+0,6%',cls:'pos'}],
+  podcasts:[
+    {h:'Der Tag — kompakt',p:'20 Minuten Einordnung zur heutigen Topmeldung.'},
+    {h:'Börse & Co.',p:'Was der Zinsentscheid für Anleger bedeutet.'},
+    {h:'Kino+ Filmpodcast',p:'Die Streaming-Highlights der Woche.'},
+    {h:'Fußball MML',p:'Transferticker, Analyse, Ausblick aufs Wochenende.'},
+    {h:'Fitness & Mind',p:'Die Wahrheit über kurze, intensive Workouts.'}
+  ],
+  zitat:{text:'Wer aufhört, neugierig zu sein, hört auf, informiert zu sein.',cite:'Folio.today, Zitat des Tages'}
+};
+
+/* Reihenfolge der Blöcke auf der Seite */
+const ORDER=['politik','wirtschaft','__unternehmen','boerse','__pb','sport','promi','film','genuss','__pb','tech','gesundheit','panorama'];
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cardHTML(it,extra){return `<article class="card ${extra||''}"><div class="kick">${esc(it.kick)}</div><h3>${esc(it.h)}</h3><p>${esc(it.p)}</p><span class="more">Weiterlesen → <span class="s">${esc(it.src)}</span></span></article>`;}
+function magHTML(no,ey,title,tag){return `<div class="mag"><div class="num">${esc(no)}</div><div class="ttl"><div class="ey">${esc(ey)}</div><h2>${esc(title)}</h2></div><span class="tag">${esc(tag)}</span></div>`;}
+function ressortHTML(r){const items=r.items.map((it,i)=>cardHTML(it,i===0?'lead':'')).join('');return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${items}</div></section>`;}
+function maerkteHTML(arr){return `<div class="maerkte">${arr.map(m=>`<div class="mk"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('')}</div>`;}
+function featureHTML(u){
+  const met=u.metrics.map(m=>`<div class="metric"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('');
+  const ch=u.chancen.map(x=>`<li>${esc(x)}</li>`).join(''); const ri=u.risiken.map(x=>`<li>${esc(x)}</li>`).join('');
+  return `<section class="ressort" id="unternehmen">${magHTML(u.no,'Spezial','Unternehmen des Tages','Aktie · Bewertung · Potenzial')}
+    <div class="feature"><div class="ft"><div><h3>${esc(u.name)}</h3><div class="sub">${esc(u.sub)}</div></div><span class="chip-warn">Beispiel — keine Anlageberatung</span></div>
+    <div class="metrics">${met}</div><p class="body">${esc(u.body)}</p>
+    <div class="cc"><div class="cc ch"><h4>Chancen</h4><ul>${ch}</ul></div><div class="cc ri"><h4>Risiken</h4><ul>${ri}</ul></div></div></div></section>`;
+}
+function render(d){
+  const R=d.ressorts; let html='';
+  // Heißer Scheiß (Bento)
+  const b=['b1','b2','b3','b4','b5','b6'];
+  html+=`<section class="ressort" id="heisser">${magHTML('★','Aufmacher','Heißer Scheiß','Top 6 · quer durch alles')}<div class="bento">${d.heisser.slice(0,6).map((it,i)=>cardHTML(it,b[i])).join('')}</div></section>`;
+  ORDER.forEach(k=>{
+    if(k==='__pb'){html+='<div class="pb"></div>';return;}
+    if(k==='__unternehmen'){html+=featureHTML(d.unternehmen);return;}
+    const r=Object.assign({id:k},R[k]); let s=ressortHTML(r);
+    if(k==='boerse'){s=s.replace('</section>',maerkteHTML(d.maerkte)+'</section>');}
+    html+=s;
+  });
+  // Podcasts
+  html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','5 Podcast-Tipps des Tages','Charts & Qualität · thematisch passend')}<div class="pods">${d.podcasts.slice(0,5).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a>▶ Spotify</a></div></div>`).join('')}</div></section>`;
+  // Zitat
+  html+=`<section class="ressort" id="zitat" style="margin-bottom:20px"><div class="zitat"><blockquote>„${esc(d.zitat.text)}"</blockquote><cite>— ${esc(d.zitat.cite)}</cite></div></section>`;
+  document.getElementById('paper').innerHTML=html;
+  // Kopf + Register + Spy
+  document.getElementById('standLabel').textContent=d.stand||'';
+  document.getElementById('footStand').textContent='Stand '+(d.stand||'');
+  buildTabs(); initSpy();
+}
+function buildTabs(){
+  const T=[['heisser','Heißer Scheiß'],['politik','Politik'],['wirtschaft','Wirtschaft'],['unternehmen','Unternehmen d. Tages'],['boerse','Börse'],['sport','Sport'],['promi','Promi'],['film','Film & Streaming'],['genuss','Genuss & Reisen'],['tech','Tech & KI'],['gesundheit','Gesundheit'],['panorama','Panorama'],['podcasts','Podcasts']];
+  document.getElementById('tabs').innerHTML=T.map((t,i)=>`<a href="#${t[0]}"${i===0?' class="active"':''}>${t[1]}</a>`).join('');
+}
+let _obs;
+function initSpy(){
+  const links=[].slice.call(document.querySelectorAll('#tabs a')); const map={};
+  links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
+  if(_obs)_obs.disconnect();
+  _obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=map[e.target.id];if(a){a.classList.add('active');a.scrollIntoView({inline:'center',block:'nearest'});}}});},{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('section.ressort').forEach(s=>_obs.observe(s));
+}
+function toggleMode(){var c=document.body.classList.toggle('compact');var b=document.getElementById('modeBtn');b.classList.toggle('on',c);b.children[0].style.display=c?'none':'';b.children[1].style.display=c?'':'none';}
+
+/* Erst Seed rendern (immer sichtbar), dann live aus Supabase nachladen */
+render(SEED);
+(async function(){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/folio_today?select=stand,payload&order=stand.desc&limit=1`,{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
+    if(!r.ok)return;
+    const rows=await r.json(); const row=Array.isArray(rows)?rows[0]:null;
+    let p=row&&row.payload; if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){p=null;}}
+    if(p&&p.heisser&&p.ressorts){document.getElementById('quellLabel').textContent='Live · automatisch kuratiert';render(p);}
+  }catch(e){/* offline / Tabelle fehlt → Seed bleibt */}
+})();
+</script>
+</body>
+</html>
