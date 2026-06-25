@@ -249,7 +249,9 @@ const SEED = {
 const ORDER=['politik','wirtschaft','__unternehmen','boerse','__pb','sport','promi','film','genuss','__pb','tech','gesundheit','panorama'];
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function cardHTML(it,extra){return `<article class="card ${extra||''}"><div class="kick">${esc(it.kick)}</div><h3>${esc(it.h)}</h3><p>${esc(it.p)}</p><span class="more">Weiterlesen → <span class="s">${esc(it.src)}</span></span></article>`;}
+/* echter Deep-Link: Artikel-URL aus den Daten, sonst Google-Suche der Überschrift (greift beim Beispiel-Briefing) */
+function lnk(it){return it&&it.url?String(it.url):('https://www.google.com/search?q='+encodeURIComponent((it&&it.h)||''));}
+function cardHTML(it,extra){return `<article class="card ${extra||''}"><div class="kick">${esc(it.kick)}</div><h3>${esc(it.h)}</h3><p>${esc(it.p)}</p><a class="more" href="${esc(lnk(it))}" target="_blank" rel="noopener noreferrer">Weiterlesen → <span class="s">${esc(it.src)}</span></a></article>`;}
 function magHTML(no,ey,title,tag){return `<div class="mag"><div class="num">${esc(no)}</div><div class="ttl"><div class="ey">${esc(ey)}</div><h2>${esc(title)}</h2></div><span class="tag">${esc(tag)}</span></div>`;}
 function ressortHTML(r){const items=r.items.map((it,i)=>cardHTML(it,i===0?'lead':'')).join('');return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${items}</div></section>`;}
 function maerkteHTML(arr){return `<div class="maerkte">${arr.map(m=>`<div class="mk"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('')}</div>`;}
@@ -259,7 +261,8 @@ function featureHTML(u){
   return `<section class="ressort" id="unternehmen">${magHTML(u.no,'Spezial','Unternehmen des Tages','Aktie · Bewertung · Potenzial')}
     <div class="feature"><div class="ft"><div><h3>${esc(u.name)}</h3><div class="sub">${esc(u.sub)}</div></div><span class="chip-warn">Beispiel — keine Anlageberatung</span></div>
     <div class="metrics">${met}</div><p class="body">${esc(u.body)}</p>
-    <div class="cc"><div class="cc ch"><h4>Chancen</h4><ul>${ch}</ul></div><div class="cc ri"><h4>Risiken</h4><ul>${ri}</ul></div></div></div></section>`;
+    <div class="cc"><div class="cc ch"><h4>Chancen</h4><ul>${ch}</ul></div><div class="cc ri"><h4>Risiken</h4><ul>${ri}</ul></div></div>
+    <a class="more" style="display:inline-block;margin-top:14px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)" href="${esc(u.url||('https://www.google.com/search?q='+encodeURIComponent((u.name||'')+' Aktie')))}" target="_blank" rel="noopener noreferrer">Analystenstimmen &amp; Chart → <span style="color:var(--muted)">Quelle</span></a></div></section>`;
 }
 function render(d){
   const R=d.ressorts; let html='';
@@ -274,7 +277,7 @@ function render(d){
     html+=s;
   });
   // Podcasts
-  html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','5 Podcast-Tipps des Tages','Charts & Qualität · thematisch passend')}<div class="pods">${d.podcasts.slice(0,5).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a>▶ Spotify</a></div></div>`).join('')}</div></section>`;
+  html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','5 Podcast-Tipps des Tages','Charts & Qualität · thematisch passend')}<div class="pods">${d.podcasts.slice(0,5).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('')}</div></section>`;
   // Zitat
   html+=`<section class="ressort" id="zitat" style="margin-bottom:20px"><div class="zitat"><blockquote>„${esc(d.zitat.text)}"</blockquote><cite>— ${esc(d.zitat.cite)}</cite></div></section>`;
   document.getElementById('paper').innerHTML=html;
