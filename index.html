@@ -276,9 +276,9 @@ function featureHTML(u){
 }
 function render(d){
   const R=d.ressorts; let html='';
-  // Heißer Scheiß (Bento)
+  // Headlines (Bento)
   const b=['b1','b2','b3','b4','b5','b6'];
-  html+=`<section class="ressort" id="heisser">${magHTML('★','Aufmacher','Heißer Scheiß','Top 6 · quer durch alles')}<div class="bento">${d.heisser.slice(0,6).map((it,i)=>cardHTML(it,b[i])).join('')}</div></section>`;
+  html+=`<section class="ressort" id="heisser">${magHTML('★','Aufmacher','Headlines','Top 6 · quer durch alles')}<div class="bento">${d.heisser.slice(0,6).map((it,i)=>cardHTML(it,b[i])).join('')}</div></section>`;
   ORDER.forEach(k=>{
     if(k==='__pb'){html+='<div class="pb"></div>';return;}
     if(k==='__unternehmen'){html+=featureHTML(d.unternehmen);return;}
@@ -299,7 +299,7 @@ function render(d){
   fillLive();
 }
 function buildTabs(){
-  const T=[['heisser','Heißer Scheiß'],['politik','Politik'],['wirtschaft','Wirtschaft'],['unternehmen','Unternehmen d. Tages'],['boerse','Börse'],['sport','Sport'],['promi','Promi'],['film','Film & Streaming'],['genuss','Genuss & Reisen'],['tech','Tech & KI'],['gesundheit','Gesundheit'],['panorama','Panorama'],['podcasts','Podcasts']];
+  const T=[['heisser','Headlines'],['politik','Politik'],['wirtschaft','Wirtschaft'],['unternehmen','Unternehmen d. Tages'],['boerse','Börse'],['sport','Sport'],['promi','Promi'],['film','Film & Streaming'],['genuss','Genuss & Reisen'],['tech','Tech & KI'],['gesundheit','Gesundheit'],['panorama','Panorama'],['podcasts','Podcasts']];
   document.getElementById('tabs').innerHTML=T.map((t,i)=>`<a href="#${t[0]}"${i===0?' class="active"':''}>${t[1]}</a>`).join('');
 }
 let _obs;
