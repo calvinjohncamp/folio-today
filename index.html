@@ -259,12 +259,14 @@ function lnk(it){return it&&it.url?String(it.url):('https://www.google.com/searc
 /* === Live-Kurse direkt im Browser (Yahoo-Worker) — taggenau bei jedem Aufruf === */
 const MK=[{l:'DAX',t:'^GDAXI'},{l:'Dow',t:'^DJI'},{l:'Nasdaq',t:'^IXIC'},{l:'S&P 500',t:'^GSPC'},{l:'Bitcoin',t:'BTC-EUR'},{l:'Gold',t:'GC=F'}];
 let __coTicker='';
-async function cfq(t){try{const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000));if(!r.ok)return null;const j=await r.json();const price=Number(j.price??j.regularMarketPrice??0)||null;const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null;const pe=Number(j.trailingPE??0)||null;return price?{price,prev,pe}:null;}catch(e){return null;}}
+async function cfq(t){try{const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000));if(!r.ok)return null;const j=await r.json();const price=Number(j.price??j.regularMarketPrice??0)||null;const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null;const pe=Number(j.trailingPE??0)||null;const mc=Number(j.marketCap??0)||null;return price?{price,prev,pe,mc}:null;}catch(e){return null;}}
 function fmtPct(v){const s=v>=0?'+':'−';return s+Math.abs(v*100).toFixed(1).replace('.',',')+'%';}
+// Marktkapitalisierung kompakt formatieren: ab 1 Mrd. in "Mrd. €", sonst in "Mio. €".
+function fmtMarketCap(v){if(v==null||isNaN(v)||v<=0)return null;if(v>=1e9)return (v/1e9).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' Mrd. €';return (v/1e6).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' Mio. €';}
 function fillLive(){
   const box=document.getElementById('maerkteBox');
   if(box) box.querySelectorAll('.mk').forEach(cell=>{cfq(cell.getAttribute('data-t')).then(q=>{const v=cell.querySelector('.v');if(!v)return;if(q&&q.price&&q.prev){const ch=(q.price-q.prev)/q.prev;v.textContent=fmtPct(ch);v.className='v '+(ch>=0?'pos':'neg');}else{v.textContent='—';}});});
-  if(__coTicker){cfq(__coTicker).then(q=>{const m=document.getElementById('coMetrics');if(!q||!m)return;const c=m.querySelectorAll('.metric .v');if(c[0]&&q.price)c[0].textContent=q.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';if(c[1]&&q.prev){const ch=(q.price-q.prev)/q.prev;c[1].textContent=fmtPct(ch);c[1].className='v '+(ch>=0?'pos':'neg');}if(c[3]&&q.pe)c[3].textContent=q.pe.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});});}
+  if(__coTicker){cfq(__coTicker).then(q=>{const m=document.getElementById('coMetrics');if(!q||!m)return;const c=m.querySelectorAll('.metric .v');if(c[0]&&q.price)c[0].textContent=q.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';if(c[1]&&q.prev){const ch=(q.price-q.prev)/q.prev;c[1].textContent=fmtPct(ch);c[1].className='v '+(ch>=0?'pos':'neg');}if(c[2]){const mc=fmtMarketCap(q.mc);if(mc)c[2].textContent=mc;}if(c[3]&&q.pe)c[3].textContent=q.pe.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});});}
 }
 function cardHTML(it,extra){
   const sum=it.sum?`<p class="sum">${esc(it.sum)}</p>`:'';
