@@ -58,10 +58,11 @@ main{padding:26px 0 64px}
 .card:hover{transform:translateY(-3px);border-color:rgba(255,122,47,.45);box-shadow:0 14px 34px rgba(0,0,0,.28)}
 .card .kick{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:9px}
 .card h3{font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.18;letter-spacing:-.2px;margin-bottom:7px}
-.card p{font-size:13.5px;color:var(--soft);line-height:1.55;flex:1}
-.card p+p{margin-top:12px}
-.card p.sum{font-weight:700;color:var(--text);flex:none;font-size:14.5px;line-height:1.4;margin-bottom:8px}
-.card p.sum+p{margin-top:0}
+.card p{font-size:13.5px;color:var(--soft);line-height:1.55}
+.card .body{flex:1;display:flex;flex-direction:column}
+.card .body p{flex:none}
+.card .body p+p{margin-top:12px}
+.card p.sum{font-weight:700;color:var(--text);font-size:14.5px;line-height:1.4;margin-bottom:8px}
 .card .more{margin-top:11px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent)}
 .card .more .s{color:var(--muted);font-weight:400}
 
@@ -268,9 +269,12 @@ function fillLive(){
 function cardHTML(it,extra){
   const sum=it.sum?`<p class="sum">${esc(it.sum)}</p>`:'';
   // Der Aufmacher (erkennbar an "sum") schreibt seinen tieferen Text in 2 Absätzen
-  // (getrennt durch Leerzeile) — die werden hier als eigene <p> gerendert statt
-  // als ein einziger Block, damit die große Kachel die Fläche ausfüllt.
-  const body=it.sum?String(it.p||'').split(/\n\s*\n/).map(s=>`<p>${esc(s.trim())}</p>`).join(''):`<p>${esc(it.p)}</p>`;
+  // (getrennt durch Leerzeile). Beide Absätze stehen in einem gemeinsamen
+  // ".body"-Wrapper (flex:1) statt selbst flex:1 zu bekommen — sonst verteilt
+  // der Flexbox-Algorithmus den Restplatz GLEICHMÄSSIG auf beide <p>, was bei
+  // unterschiedlich langen Absätzen eine hässliche Lücke MITTEN im Text erzeugt.
+  const paras=it.sum?String(it.p||'').split(/\n\s*\n/).map(s=>`<p>${esc(s.trim())}</p>`).join(''):`<p>${esc(it.p)}</p>`;
+  const body=`<div class="body">${paras}</div>`;
   return `<a class="card ${extra||''}" href="${esc(lnk(it))}" target="_blank" rel="noopener noreferrer"><div class="kick">${esc(it.kick)}</div><h3>${esc(it.h)}</h3>${sum}${body}<span class="more">Weiterlesen → <span class="s">${esc(it.src)}</span></span></a>`;
 }
 function magHTML(no,ey,title,tag){return `<div class="mag"><div class="num">${esc(no)}</div><div class="ttl"><div class="ey">${esc(ey)}</div><h2>${esc(title)}</h2></div><span class="tag">${esc(tag)}</span></div>`;}
