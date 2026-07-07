@@ -114,10 +114,11 @@ main{padding:26px 0 64px}
 
 .pods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:760px){.pods{grid-template-columns:1fr}}
-.pod{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px}
+.pod{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px;transition:transform .18s,border-color .18s,box-shadow .18s}
+.pod:hover{transform:translateY(-3px);border-color:rgba(116,200,228,.45);box-shadow:0 14px 34px rgba(0,0,0,.28)}
 .pod .n{font-family:var(--serif);font-size:30px;line-height:.8;color:transparent;-webkit-text-stroke:1.2px var(--teal)}
 .pod h3{font-size:15px;font-weight:700;margin-bottom:3px} .pod p{font-size:12.5px;color:var(--soft);line-height:1.45;margin-bottom:7px}
-.pod a{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)}
+.pod .cta{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)}
 .pod.fix{background:linear-gradient(180deg,var(--bg2),var(--bg));border-color:rgba(116,200,228,.28)}
 .pod .kick{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
 
@@ -285,12 +286,12 @@ const SEED = {
     {s:'Lanz + Precht',h:'Der Freitags-Disput fürs Denken',p:'Markus Lanz und Richard David Precht streiten sich wöchentlich durch die großen Fragen der Zeit.',url:'https://open.spotify.com/show/4bGWMQA1ANGTgcysDo14aX'}
   ],
   podcasts:[
-    {h:'Der Tag — kompakt',p:'20 Minuten Einordnung zur heutigen Topmeldung.'},
-    {h:'Börse & Co.',p:'Was der Zinsentscheid für Anleger bedeutet.'},
-    {h:'Kino+ Filmpodcast',p:'Die Streaming-Highlights der Woche.'},
-    {h:'Fußball MML',p:'Transferticker, Analyse, Ausblick aufs Wochenende.'},
-    {h:'Fitness & Mind',p:'Die Wahrheit über kurze, intensive Workouts.'},
-    {h:'True Crime Deutschland',p:'Der ungelöste Fall, über den gerade alle reden.'}
+    {s:'Apokalypse & Filterkaffee',h:'Der Tag — kompakt eingeordnet',p:'Micky Beisenherz serviert die wichtigsten Schlagzeilen morgens druckfrisch.',url:'https://open.spotify.com/show/6kyGUIbKUH7G506XGX4lNk'},
+    {s:'Alles auf Aktien',h:'Was der Zinsentscheid für Anleger bedeutet',p:'Täglich zehn Minuten Klartext zu Börse, ETFs und Geldanlage.',url:'https://open.spotify.com/show/2qiP4pYQXi8NMjHlCICmSq'},
+    {s:'OMR Podcast',h:'Wer die Digitalbranche gerade bewegt',p:'Philipp Westermeyer im Gespräch mit den prägenden Köpfen aus Tech und Business.',url:'https://open.spotify.com/show/4rION5Qm2nPvDbzIB1wUiH'},
+    {s:'Rasenfunk – Bundesliga',h:'Transferticker, Analyse, Ausblick aufs Wochenende',p:'Der Bundesliga-Spieltag fundiert und ohne Boulevard-Ton aufgearbeitet.',url:'https://open.spotify.com/show/2wlX1atNT6NG5rVs0Kmvqg'},
+    {s:'Mehr als Sport',h:'Die Wahrheit über kurze, intensive Workouts',p:'Wissenschaftlich fundierte Fitness- und Gesundheitstipps für den Alltag.',url:'https://open.spotify.com/show/61H20MNhzOSYjNHDQsTrfE'},
+    {s:'ZEIT Verbrechen',h:'Der Fall, über den gerade alle reden',p:'Sabine Rückert seziert wahre Kriminalfälle mit journalistischer Tiefe.',url:'https://open.spotify.com/show/3gZaAYXAQAh09UlKbYaK49'}
   ],
   zitat:{text:'Wer aufhört, neugierig zu sein, hört auf, informiert zu sein.',cite:'Folio.today, Zitat des Tages'}
 };
@@ -354,8 +355,10 @@ function render(d){
     html+=s;
   });
   // Podcasts
-  const podsFixHTML=d.podcastsFix.map(p=>`<div class="pod fix"><div><div class="kick">${esc(p.s)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url)}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('');
-  const podsHTML=d.podcasts.slice(0,6).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('');
+  const podsFixHTML=d.podcastsFix.map(p=>`<a class="pod fix" href="${esc(p.url)}" target="_blank" rel="noopener"><div><div class="kick">${esc(p.s)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><span class="cta">▶ Spotify</span></div></a>`).join('');
+  // Fallback auf Spotify-Suche nur als Übergangsschutz, solange der Worker mit dem alten
+  // Podcast-Schema (ohne "url") noch nicht neu deployt ist — siehe worker.js PODCAST_POOL.
+  const podsHTML=d.podcasts.slice(0,6).map((p,i)=>`<a class="pod" href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener"><div class="n">${i+1}</div><div>${p.s?`<div class="kick">${esc(p.s)}</div>`:''}<h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><span class="cta">▶ Spotify</span></div></a>`).join('');
   html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','Unsere Podcast-Empfehlungen','3 Favoriten · 6 Tagestipps')}<div class="pods">${podsFixHTML}${podsHTML}</div></section>`;
   // Zitat
   html+=`<section class="ressort" id="zitat" style="margin-bottom:20px"><div class="zitat"><blockquote>„${esc(d.zitat.text)}"</blockquote><cite>— ${esc(d.zitat.cite)}</cite></div></section>`;
