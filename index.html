@@ -118,6 +118,8 @@ main{padding:26px 0 64px}
 .pod .n{font-family:var(--serif);font-size:30px;line-height:.8;color:transparent;-webkit-text-stroke:1.2px var(--teal)}
 .pod h3{font-size:15px;font-weight:700;margin-bottom:3px} .pod p{font-size:12.5px;color:var(--soft);line-height:1.45;margin-bottom:7px}
 .pod a{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal)}
+.pod.fix{background:linear-gradient(180deg,var(--bg2),var(--bg));border-color:rgba(116,200,228,.28)}
+.pod .kick{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
 
 .zitat{background:linear-gradient(120deg,rgba(116,200,228,.08),transparent);border-left:3px solid var(--teal);border-radius:0 14px 14px 0;padding:22px 26px}
 .zitat blockquote{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3vw,30px);line-height:1.3}
@@ -277,12 +279,18 @@ const SEED = {
     chancen:['Rekord-Auftragsbestand bis 2028 gefüllt','Politischer Rückenwind durch Netzausbau','Wiederkehrende Wartungserlöse stabilisieren'],
     risiken:['Lieferengpässe bei Spezialkomponenten','Hohe Bewertung, wenig Spielraum','Zinssensitiv, kapitalintensiv']},
   maerkte:[{l:'DAX',v:'+0,7%',cls:'pos'},{l:'Dow',v:'+0,3%',cls:'pos'},{l:'Nasdaq',v:'−0,4%',cls:'neg'},{l:'S&P 500',v:'−0,1%',cls:'neg'},{l:'Bitcoin',v:'+1,9%',cls:'pos'},{l:'Gold',v:'+0,6%',cls:'pos'}],
+  podcastsFix:[
+    {s:'The Pioneer Morning Briefing',h:'Der tägliche News-Espresso',p:'Steingart & Team ordnen Politik und Wirtschaft — jeden Morgen in 20 Minuten.',url:'https://open.spotify.com/show/3tMwolVmLPxyXuZPQu26kQ'},
+    {s:'Hotel Matze',h:'Große Namen, ganz offen',p:'Matze Hielscher im langen, persönlichen Gespräch — Kult unter den Interview-Podcasts.',url:'https://open.spotify.com/show/0ivn4wyUBScv57XS8vbVaa'},
+    {s:'Lanz + Precht',h:'Der Freitags-Disput fürs Denken',p:'Markus Lanz und Richard David Precht streiten sich wöchentlich durch die großen Fragen der Zeit.',url:'https://open.spotify.com/show/4bGWMQA1ANGTgcysDo14aX'}
+  ],
   podcasts:[
     {h:'Der Tag — kompakt',p:'20 Minuten Einordnung zur heutigen Topmeldung.'},
     {h:'Börse & Co.',p:'Was der Zinsentscheid für Anleger bedeutet.'},
     {h:'Kino+ Filmpodcast',p:'Die Streaming-Highlights der Woche.'},
     {h:'Fußball MML',p:'Transferticker, Analyse, Ausblick aufs Wochenende.'},
-    {h:'Fitness & Mind',p:'Die Wahrheit über kurze, intensive Workouts.'}
+    {h:'Fitness & Mind',p:'Die Wahrheit über kurze, intensive Workouts.'},
+    {h:'True Crime Deutschland',p:'Der ungelöste Fall, über den gerade alle reden.'}
   ],
   zitat:{text:'Wer aufhört, neugierig zu sein, hört auf, informiert zu sein.',cite:'Folio.today, Zitat des Tages'}
 };
@@ -346,7 +354,9 @@ function render(d){
     html+=s;
   });
   // Podcasts
-  html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','5 Podcast-Tipps des Tages','Charts & Qualität · thematisch passend')}<div class="pods">${d.podcasts.slice(0,5).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('')}</div></section>`;
+  const podsFixHTML=d.podcastsFix.map(p=>`<div class="pod fix"><div><div class="kick">${esc(p.s)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url)}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('');
+  const podsHTML=d.podcasts.slice(0,6).map((p,i)=>`<div class="pod"><div class="n">${i+1}</div><div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><a href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener">▶ Spotify</a></div></div>`).join('');
+  html+=`<section class="ressort" id="podcasts">${magHTML('🎧','Zum Reinhören','Unsere Podcast-Empfehlungen','3 Favoriten · 6 Tagestipps')}<div class="pods">${podsFixHTML}${podsHTML}</div></section>`;
   // Zitat
   html+=`<section class="ressort" id="zitat" style="margin-bottom:20px"><div class="zitat"><blockquote>„${esc(d.zitat.text)}"</blockquote><cite>— ${esc(d.zitat.cite)}</cite></div></section>`;
   document.getElementById('paper').innerHTML=html;
