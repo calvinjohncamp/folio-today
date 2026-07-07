@@ -36,7 +36,6 @@ a{color:inherit;text-decoration:none}
 
 .topbar{position:sticky;top:0;z-index:80;background:rgba(15,25,32,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .tb-in{display:flex;align-items:center;gap:14px;height:54px}
-.tb-logo-img{height:24px;width:auto;display:block;flex-shrink:0}
 .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent)}
 .tabs::-webkit-scrollbar{display:none}
 .tabs a{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:7px 11px;border-radius:999px;white-space:nowrap;transition:.15s;border:1px solid transparent}
@@ -45,7 +44,6 @@ a{color:inherit;text-decoration:none}
 .tb-ctrl{display:flex;gap:7px;flex-shrink:0}
 .btn{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--soft);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
 .btn:hover{border-color:var(--accent);color:var(--text)}
-.btn.on{background:var(--accent);border-color:var(--accent);color:#0F1920}
 .btn.pdf{border-color:var(--teal);color:var(--teal)}
 .btn.pdf:hover{background:var(--teal);color:#0F1920}
 @media(max-width:720px){.tb-ctrl .lbl{display:none}}
@@ -80,7 +78,9 @@ main{padding:26px 0 64px}
 
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .grid .lead{grid-column:span 2} .grid .lead h3{font-size:22px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.grid .lead{grid-column:auto}}
+.grid-more{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.grid .lead{grid-column:auto}.grid-more{grid-template-columns:1fr}}
+@media(max-width:1000px) and (min-width:761px){.grid-more{grid-template-columns:repeat(2,1fr)}}
 
 .feature{background:radial-gradient(800px 320px at 100% 0%,rgba(116,200,228,.12),transparent 60%),linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:18px;padding:24px}
 .feature .ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:4px}
@@ -126,9 +126,6 @@ main{padding:26px 0 64px}
 footer{border-top:1px solid var(--line);padding:24px 0 48px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
 .ribbon{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(255,122,47,.4);border-radius:6px;padding:3px 9px}
 
-body.compact .grid .card:nth-child(n+3){display:none}
-body.compact .bento .card:nth-child(n+4){display:none}
-body.compact .pods .pod:nth-child(n+4){display:none}
 .pb{break-before:page}
 
 @media print{
@@ -144,11 +141,10 @@ body.compact .pods .pod:nth-child(n+4){display:none}
   .card p,.feature .body,.cc li,.pod p{color:#333} .card .kick{color:#b8631f}
   .b1{background:#faf9f7!important;border-color:#ddd!important}
   .metrics,.maerkte{background:#ddd} .metric,.mk{background:#fff} .zitat{background:none}
-  body.compact .grid .card:nth-child(n+3),body.compact .bento .card:nth-child(n+4),body.compact .pods .pod:nth-child(n+4){display:flex}
 }
 </style>
 </head>
-<body class="full">
+<body>
 
 <header class="cover">
   <div class="wrap">
@@ -164,10 +160,8 @@ body.compact .pods .pod:nth-child(n+4){display:none}
 
 <div class="topbar">
   <div class="wrap"><div class="tb-in">
-    <img class="tb-logo-img" src="folio-today-transparent.png" alt="Folio.news">
     <nav class="tabs" id="tabs"></nav>
     <div class="tb-ctrl no-print">
-      <button class="btn" id="modeBtn" onclick="toggleMode()"><span class="lbl">Kompakt</span><span style="display:none">Voll</span></button>
       <button class="btn pdf" onclick="window.print()">PDF</button>
     </div>
   </div></div>
@@ -196,51 +190,85 @@ const SEED = {
     {kick:'tagesschau',h:'EZB hält den Leitzins – lässt aber die Tür für eine Herbst-Senkung offen',p:'Die Europäische Zentralbank belässt den Leitzins vorerst unverändert und wartet weitere Inflationsdaten ab. Präsidentin Lagarde deutete an, dass eine Senkung im Herbst möglich sei, sollte die Teuerung weiter nachlassen. Die Märkte reagierten gelassen, die Anleiherenditen gaben leicht nach. Für Sparer und Kreditnehmer bleibt die Lage damit zunächst stabil.',src:'tagesschau'}
   ],
   ressorts:{
-    politik:{no:'01',ey:'Ressort',title:'Politik & Welt',tag:'5 Themen',items:[
+    politik:{no:'01',ey:'Ressort',title:'Politik & Welt',tag:'6 Themen',items:[
       {kick:'tagesschau · Diplomatie',h:'Gipfeltreffen endet mit vorsichtiger Annäherung',p:'Konkrete Beschlüsse blieben aus, doch beide Seiten kündigten weitere Gespräche an — Beobachter werten allein den Ton als Fortschritt.',src:'tagesschau'},
       {kick:'ZEIT',h:'Neue Migrationszahlen befeuern Debatte',p:'Regierung und Opposition deuten dieselbe Statistik gegensätzlich.',src:'ZEIT'},
-      {kick:'FAZ',h:'Wahlausgang mit Folgen für Europa',p:'Das Ergebnis verschiebt Mehrheiten in Brüssel.',src:'FAZ'}
+      {kick:'FAZ',h:'Wahlausgang mit Folgen für Europa',p:'Das Ergebnis verschiebt Mehrheiten in Brüssel.',src:'FAZ'},
+      {kick:'Deutschlandfunk',h:'Koalition ringt um Haushaltskompromiss',p:'Die Verhandlungen ziehen sich bis in die Nacht — ein Durchbruch gilt als knapp möglich.',src:'DLF'},
+      {kick:'DW',h:'EU einigt sich auf neue Sanktionslinie',p:'Die Mitgliedstaaten tragen den Vorschlag mit, Details bleiben aber vage.',src:'DW'},
+      {kick:'tagesschau · Innenpolitik',h:'Reform des Wahlrechts sorgt für Streit zwischen den Fraktionen',p:'Kleinere Parteien befürchten Nachteile, die Koalition verteidigt den Entwurf als überfällig.',src:'tagesschau'}
     ]},
-    wirtschaft:{no:'02',ey:'Ressort',title:'Wirtschaft & Unternehmen',tag:'5 Themen',items:[
+    wirtschaft:{no:'02',ey:'Ressort',title:'Wirtschaft & Unternehmen',tag:'6 Themen',items:[
       {kick:'n-tv · Konjunktur',h:'Ifo-Index steigt den dritten Monat in Folge',p:'Die Stimmung in den Chefetagen hellt sich auf — von einem echten Aufschwung will dennoch niemand sprechen.',src:'n-tv'},
       {kick:'Reuters',h:'Großfusion in der Logistik',p:'Zwei Schwergewichte bündeln Kräfte — Kartellwächter schauen hin.',src:'Reuters'},
-      {kick:'tagesschau',h:'Tarifeinigung im Einzelhandel',p:'Mehr Geld in zwei Stufen nach langer Schlichtung.',src:'tagesschau'}
+      {kick:'tagesschau',h:'Tarifeinigung im Einzelhandel',p:'Mehr Geld in zwei Stufen nach langer Schlichtung.',src:'tagesschau'},
+      {kick:'n-tv',h:'Auftragseingang der Industrie legt überraschend zu',p:'Vor allem der Maschinenbau meldet mehr Bestellungen aus dem Ausland.',src:'n-tv'},
+      {kick:'tagesschau · Handel',h:'Einzelhandel klagt über schwaches Weihnachtsgeschäft',p:'Der Verband fordert steuerliche Entlastungen, die Kundschaft bleibt zurückhaltend.',src:'tagesschau'},
+      {kick:'Reuters',h:'Chiphersteller kündigt Milliardeninvestition an',p:'Ein neues Werk soll hunderte Arbeitsplätze schaffen — Standortentscheidung fällt in Kürze.',src:'Reuters'}
     ]},
     boerse:{no:'04',ey:'Ressort',title:'Börse & Finanzen',tag:'+ Märkte-Schnappschuss',items:[
       {kick:'CNBC · Geldpolitik',h:'Notenbank deutet längere Zinspause an',p:'Die Märkte reagierten verhalten positiv, Anleiherenditen gaben leicht nach — der Fokus wandert zur nächsten Inflationszahl.',src:'CNBC'},
-      {kick:'Finanzen.net',h:'Gold nahe Rekordhoch',p:'Sichere Häfen sind gefragt, geopolitische Unsicherheit treibt.',src:'Finanzen.net'}
+      {kick:'Finanzen.net',h:'Gold nahe Rekordhoch',p:'Sichere Häfen sind gefragt, geopolitische Unsicherheit treibt.',src:'Finanzen.net'},
+      {kick:'n-tv · Börse',h:'DAX tastet sich an neue Bestmarke heran',p:'Schwergewichte aus der Industrie treiben den Index, Anleger bleiben vorsichtig optimistisch.',src:'n-tv'},
+      {kick:'CNBC',h:'Ölpreis gibt nach OPEC-Entscheidung nach',p:'Die Fördermenge bleibt unverändert, Analysten hatten mit mehr gerechnet.',src:'CNBC'},
+      {kick:'Finanzen.net',h:'Bitcoin-Kurs schwankt stark vor US-Daten',p:'Trader positionieren sich vor dem Inflationsbericht neu.',src:'Finanzen.net'},
+      {kick:'Reuters',h:'Anleiherenditen ziehen nach Konjunkturdaten an',p:'Die Zahlen fallen robuster aus als erwartet — Zinssenkungsfantasie schwindet etwas.',src:'Reuters'}
     ]},
     sport:{no:'05',ey:'Ressort',title:'Sport',tag:'Fußball & mehr',items:[
       {kick:'kicker · Transfer',h:'Transfer-Hammer: Topstürmer wechselt die Liga',p:'Die Ablöse sprengt den Vereinsrekord — Fans feiern, Experten sind gespalten, der Aufsichtsrat schweigt.',src:'kicker'},
       {kick:'Sportschau',h:'Deutsche Hoffnung im Achtelfinale',p:'In vier Sätzen souverän weiter.',src:'Sportschau'},
-      {kick:'n-tv Sport',h:'Formel 1: Quali-Bestzeit',p:'Hauchdünner Vorsprung verspricht ein enges Rennen.',src:'n-tv'}
+      {kick:'n-tv Sport',h:'Formel 1: Quali-Bestzeit',p:'Hauchdünner Vorsprung verspricht ein enges Rennen.',src:'n-tv'},
+      {kick:'kicker',h:'Bundesliga-Trainer nach Serie von Niederlagen unter Druck',p:'Die Vereinsführung hält öffentlich noch an ihm fest — hinter den Kulissen wird über Alternativen gesprochen.',src:'kicker'},
+      {kick:'Sportschau',h:'Handball-Nationalmannschaft zieht ins Halbfinale ein',p:'Ein souveräner Sieg gegen einen favorisierten Gegner sorgt für Aufbruchstimmung.',src:'Sportschau'},
+      {kick:'n-tv Sport',h:'Tennis-Star kündigt überraschendes Karriereende an',p:'Nach Jahren mit Verletzungspausen zieht der Champion einen Schlussstrich.',src:'n-tv'}
     ]},
-    promi:{no:'06',ey:'Ressort',title:'Promi & People',tag:'5 Themen',items:[
+    promi:{no:'06',ey:'Ressort',title:'Promi & People',tag:'6 Themen',items:[
       {kick:'Spiegel Panorama',h:'Hollywood-Paar bestätigt Verlobung — auf Umwegen',p:'Medienberichten zufolge soll ein Ring auf einem Foto die Spekulationen ausgelöst haben; bestätigt wurde es spät am Abend.',src:'Spiegel'},
       {kick:'n-tv',h:'Pop-Ikone kündigt Welttournee an',p:'Vorverkauf startet diese Woche — Ansturm erwartet.',src:'n-tv'},
-      {kick:'Bunte',h:'Royaler Auftritt sorgt für Gesprächsstoff',p:'Ein Detail am Rande beschäftigt die sozialen Medien.',src:'Bunte'}
+      {kick:'Bunte',h:'Royaler Auftritt sorgt für Gesprächsstoff',p:'Ein Detail am Rande beschäftigt die sozialen Medien.',src:'Bunte'},
+      {kick:'Spiegel Panorama',h:'Schauspielerin spricht erstmals offen über Krankheitspause',p:'In einem Interview schildert sie den Verlauf — und kündigt ihre Rückkehr vors Publikum an.',src:'Spiegel'},
+      {kick:'Bunte',h:'Trennung nach nur wenigen Monaten Ehe',p:'Beide Seiten bitten in einer knappen Erklärung um Privatsphäre.',src:'Bunte'},
+      {kick:'n-tv',h:'Late-Night-Moderator wechselt überraschend den Sender',p:'Der neue Sendeplatz steht bereits fest, die Show startet im Frühjahr.',src:'n-tv'}
     ]},
-    film:{no:'07',ey:'Ressort',title:'Film, Serien & Streaming',tag:'5 Themen',items:[
+    film:{no:'07',ey:'Ressort',title:'Film, Serien & Streaming',tag:'6 Themen',items:[
       {kick:'DWDL · Serien',h:'Neue Staffel der Kult-Serie startet mit Cliffhanger',p:'Die ersten Kritiken sind euphorisch, der Anbieter meldet einen Rekordauftakt — und kündigt direkt die nächste Staffel an.',src:'DWDL'},
       {kick:'Variety',h:'Blockbuster knackt Kassen-Marke',p:'Trotz schwacher Kritiken stürmt das Publikum die Kinos.',src:'Variety'},
-      {kick:'heise',h:'Streaming-Dienst erhöht die Preise',p:'Mehr Eigenproduktionen als Trostpflaster.',src:'heise'}
+      {kick:'heise',h:'Streaming-Dienst erhöht die Preise',p:'Mehr Eigenproduktionen als Trostpflaster.',src:'heise'},
+      {kick:'DWDL',h:'Erfolgsserie wird nach nur einer Staffel abgesetzt',p:'Die Quoten blieben hinter den Erwartungen zurück — Fans starten eine Petition.',src:'DWDL'},
+      {kick:'Variety',h:'Regisseur kündigt lang erwartete Fortsetzung an',p:'Die Dreharbeiten sollen bereits im Sommer beginnen.',src:'Variety'},
+      {kick:'n-tv',h:'Streaming-Anbieter meldet Rekord bei Neuanmeldungen',p:'Ein Serien-Hit treibt den Zulauf — Konkurrenten reagieren mit eigenen Angeboten.',src:'n-tv'}
     ]},
-    genuss:{no:'08',ey:'Ressort',title:'Essen, Genuss & Reisen',tag:'5 Themen',items:[
+    genuss:{no:'08',ey:'Ressort',title:'Essen, Genuss & Reisen',tag:'6 Themen',items:[
       {kick:'SZ Magazin · Kulinarik',h:'Guide kürt das Restaurant des Jahres — eine Überraschung',p:'Ein kleines Lokal abseits der Metropolen setzt sich gegen die etablierte Spitze durch; der Andrang dürfte gewaltig werden.',src:'SZ Magazin'},
       {kick:'GEO',h:'Geheimtipp-Insel boomt',p:'Was Reisende lockt — und warum Einheimische zwiegespalten sind.',src:'GEO'},
-      {kick:'Essen & Trinken',h:'Diese Zutat erlebt ein Comeback',p:'Von der Spitzenküche bis ins Supermarktregal.',src:'E&T'}
+      {kick:'Essen & Trinken',h:'Diese Zutat erlebt ein Comeback',p:'Von der Spitzenküche bis ins Supermarktregal.',src:'E&T'},
+      {kick:'GEO',h:'Fluggesellschaften erwarten Rekordsommer',p:'Besonders Ziele im Mittelmeerraum verzeichnen schon jetzt eine hohe Nachfrage.',src:'GEO'},
+      {kick:'SZ Magazin',h:'Trendgetränk erobert die Cafés',p:'Was hinter dem Hype steckt — und ob er von Dauer ist.',src:'SZ Magazin'},
+      {kick:'Essen & Trinken',h:'Sternekoch eröffnet erstes Lokal außerhalb der Heimatstadt',p:'Die Reservierungsliste ist schon Wochen im Voraus ausgebucht.',src:'E&T'}
     ]},
-    tech:{no:'09',ey:'Ressort',title:'Tech & KI',tag:'4 Themen',items:[
+    tech:{no:'09',ey:'Ressort',title:'Tech & KI',tag:'6 Themen',items:[
       {kick:'heise · KI',h:'Neues KI-Modell soll schneller und günstiger sein',p:'Erste Benchmarks wirken stark — unabhängige Tests stehen aus, die Konkurrenz reagiert bereits nervös.',src:'heise'},
-      {kick:'The Verge',h:'Smartphone-Start verschoben',p:'Lieferprobleme bremsen, die Konkurrenz nutzt die Lücke.',src:'The Verge'}
+      {kick:'The Verge',h:'Smartphone-Start verschoben',p:'Lieferprobleme bremsen, die Konkurrenz nutzt die Lücke.',src:'The Verge'},
+      {kick:'Golem',h:'Neue EU-Regeln für KI-Anwendungen treten in Kraft',p:'Unternehmen müssen Risikobewertungen vorlegen — Kritiker warnen vor zusätzlicher Bürokratie.',src:'Golem'},
+      {kick:'netzpolitik.org',h:'Datenleck bei großem Cloud-Anbieter aufgedeckt',p:'Betroffen sind vor allem Firmenkunden — der Anbieter spielt das Ausmaß herunter.',src:'netzpolitik.org'},
+      {kick:'heise',h:'Chip-Startup meldet Durchbruch bei Energieeffizienz',p:'Der neue Prozessor soll deutlich weniger Strom verbrauchen als vergleichbare Modelle.',src:'heise'},
+      {kick:'The Verge',h:'Social-Media-Plattform testet neues Empfehlungs-System',p:'Nutzer berichten von spürbar veränderten Inhalten im Feed.',src:'The Verge'}
     ]},
-    gesundheit:{no:'10',ey:'Ressort',title:'Gesundheit & Fitness',tag:'4 Themen',items:[
+    gesundheit:{no:'10',ey:'Ressort',title:'Gesundheit & Fitness',tag:'6 Themen',items:[
       {kick:'Apotheken Umschau · Studie',h:'Schon kurze Bewegungseinheiten zeigen große Wirkung',p:'Forschende berichten von messbaren Effekten bereits bei wenigen Minuten täglich — gut für alle ohne Zeit fürs Fitnessstudio.',src:'Apotheken Umschau'},
-      {kick:'Spektrum',h:'Neuer Ansatz in der Schlafforschung',p:'Was den Tiefschlaf fördert — und welche Mythen fallen.',src:'Spektrum'}
+      {kick:'Spektrum',h:'Neuer Ansatz in der Schlafforschung',p:'Was den Tiefschlaf fördert — und welche Mythen fallen.',src:'Spektrum'},
+      {kick:'Apotheken Umschau',h:'Warnung vor verunreinigten Nahrungsergänzungsmitteln',p:'Behörden riefen mehrere Chargen zurück — Betroffene sollen den Kauf belegen.',src:'Apotheken Umschau'},
+      {kick:'Spektrum',h:'Studie findet Zusammenhang zwischen Ernährung und Konzentration',p:'Die Effekte zeigen sich bereits nach wenigen Wochen Umstellung.',src:'Spektrum'},
+      {kick:'Apotheken Umschau',h:'Grippewelle rollt früher an als in den Vorjahren',p:'Ärzte raten zur rechtzeitigen Impfung, besonders für Risikogruppen.',src:'Apotheken Umschau'},
+      {kick:'Spektrum',h:'Neue Leitlinie ändert Empfehlung zu Blutdruckwerten',p:'Mediziner erwarten dadurch mehr Diagnosen — und mehr Diskussionen in der Praxis.',src:'Spektrum'}
     ]},
     panorama:{no:'11',ey:'Ressort',title:'Panorama / Viral',tag:'Kurioses',items:[
       {kick:'Spiegel Panorama · Viral',h:'Video aus einer Kleinstadt geht um die Welt',p:'Millionen Klicks in 24 Stunden — die Hintergrundgeschichte ist noch schöner als der Clip selbst.',src:'Spiegel'},
-      {kick:'n-tv',h:'Alltagsgegenstand erzielt absurde Summe',p:'Was den Bieterkrieg auslöste — und wer den Zuschlag bekam.',src:'n-tv'}
+      {kick:'n-tv',h:'Alltagsgegenstand erzielt absurde Summe',p:'Was den Bieterkrieg auslöste — und wer den Zuschlag bekam.',src:'n-tv'},
+      {kick:'MDR',h:'Dorf feiert ungewöhnliches Jubiläum mit Rekordversuch',p:'Hunderte Gäste reisen an, ein offizieller Rekordrichter ist ebenfalls vor Ort.',src:'MDR'},
+      {kick:'WDR',h:'Verirrtes Tier sorgt für Verkehrschaos in der Innenstadt',p:'Die Feuerwehr braucht Stunden, um es wieder einzufangen.',src:'WDR'},
+      {kick:'n-tv',h:'Kuriose Umfrage zeigt überraschende Lieblingswörter der Deutschen',p:'Ein Begriff schafft es unerwartet auf Platz eins.',src:'n-tv'},
+      {kick:'Spiegel Panorama',h:'Nachbarschaftsstreit um Gartenzwerg landet vor Gericht',p:'Der Richter zeigt sich amüsiert, das Urteil überrascht dennoch beide Seiten.',src:'Spiegel'}
     ]}
   },
   unternehmen:{no:'03',name:'NovaGrid SE',sub:'ENERGIE-INFRASTRUKTUR · WKN A2XYZ9 · ISIN DE000A2XYZ97 · XETRA',
@@ -289,7 +317,12 @@ function cardHTML(it,extra){
   return `<a class="card ${extra||''}" href="${esc(lnk(it))}" target="_blank" rel="noopener noreferrer"><div class="kick">${esc(it.kick)}</div><h3>${esc(it.h)}</h3>${sum}${body}<span class="more">Weiterlesen → <span class="s">${esc(it.src)}</span></span></a>`;
 }
 function magHTML(no,ey,title,tag){return `<div class="mag"><div class="num">${esc(no)}</div><div class="ttl"><div class="ey">${esc(ey)}</div><h2>${esc(title)}</h2></div><span class="tag">${esc(tag)}</span></div>`;}
-function ressortHTML(r){const items=r.items.map((it,i)=>cardHTML(it,i===0?'lead':'')).join('');return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${items}</div></section>`;}
+function ressortHTML(r){
+  const main=r.items.slice(0,2).map((it,i)=>cardHTML(it,i===0?'lead':'')).join('');
+  const restItems=r.items.slice(2,6);
+  const more=restItems.length?`<div class="grid-more">${restItems.map(it=>cardHTML(it,'')).join('')}</div>`:'';
+  return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${main}</div>${more}</section>`;
+}
 function maerkteHTML(){return `<div class="maerkte" id="maerkteBox">${MK.map(m=>`<div class="mk" data-t="${esc(m.t)}"><div class="l">${esc(m.l)}</div><div class="v">·</div></div>`).join('')}</div>`;}
 function featureHTML(u){
   const met=u.metrics.map(m=>`<div class="metric"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('');
@@ -336,7 +369,6 @@ function initSpy(){
   _obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=map[e.target.id];if(a){a.classList.add('active');a.scrollIntoView({inline:'center',block:'nearest'});}}});},{rootMargin:'-30% 0px -60% 0px'});
   document.querySelectorAll('section.ressort').forEach(s=>_obs.observe(s));
 }
-function toggleMode(){var c=document.body.classList.toggle('compact');var b=document.getElementById('modeBtn');b.classList.toggle('on',c);b.children[0].style.display=c?'none':'';b.children[1].style.display=c?'':'none';}
 
 /* Erst Seed rendern (immer sichtbar), dann live aus Supabase nachladen */
 render(SEED);
