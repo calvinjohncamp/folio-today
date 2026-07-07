@@ -280,11 +280,6 @@ const SEED = {
     chancen:['Rekord-Auftragsbestand bis 2028 gefüllt','Politischer Rückenwind durch Netzausbau','Wiederkehrende Wartungserlöse stabilisieren'],
     risiken:['Lieferengpässe bei Spezialkomponenten','Hohe Bewertung, wenig Spielraum','Zinssensitiv, kapitalintensiv']},
   maerkte:[{l:'DAX',v:'+0,7%',cls:'pos'},{l:'Dow',v:'+0,3%',cls:'pos'},{l:'Nasdaq',v:'−0,4%',cls:'neg'},{l:'S&P 500',v:'−0,1%',cls:'neg'},{l:'Bitcoin',v:'+1,9%',cls:'pos'},{l:'Gold',v:'+0,6%',cls:'pos'}],
-  podcastsFix:[
-    {s:'The Pioneer Morning Briefing',h:'Der tägliche News-Espresso',p:'Steingart & Team ordnen Politik und Wirtschaft — jeden Morgen in 20 Minuten.',url:'https://open.spotify.com/show/3tMwolVmLPxyXuZPQu26kQ'},
-    {s:'Hotel Matze',h:'Große Namen, ganz offen',p:'Matze Hielscher im langen, persönlichen Gespräch — Kult unter den Interview-Podcasts.',url:'https://open.spotify.com/show/0ivn4wyUBScv57XS8vbVaa'},
-    {s:'Lanz + Precht',h:'Der Freitags-Disput fürs Denken',p:'Markus Lanz und Richard David Precht streiten sich wöchentlich durch die großen Fragen der Zeit.',url:'https://open.spotify.com/show/4bGWMQA1ANGTgcysDo14aX'}
-  ],
   podcasts:[
     {s:'Apokalypse & Filterkaffee',h:'Der Tag — kompakt eingeordnet',p:'Micky Beisenherz serviert die wichtigsten Schlagzeilen morgens druckfrisch.',url:'https://open.spotify.com/show/6kyGUIbKUH7G506XGX4lNk'},
     {s:'Alles auf Aktien',h:'Was der Zinsentscheid für Anleger bedeutet',p:'Täglich zehn Minuten Klartext zu Börse, ETFs und Geldanlage.',url:'https://open.spotify.com/show/2qiP4pYQXi8NMjHlCICmSq'},
@@ -295,6 +290,15 @@ const SEED = {
   ],
   zitat:{text:'Wer aufhört, neugierig zu sein, hört auf, informiert zu sein.',cite:'Folio.today, Zitat des Tages'}
 };
+
+/* Die 3 festen Favoriten-Podcasts — bewusst NICHT Teil von SEED/Supabase-Payload,
+   sondern eine eigene, von den täglichen Redaktionsdaten unabhängige Konstante,
+   damit sie unabhängig von SEED oder Live-Daten immer verfügbar sind. */
+const PODCASTS_FIX=[
+  {s:'The Pioneer Morning Briefing',h:'Der tägliche News-Espresso',p:'Steingart & Team ordnen Politik und Wirtschaft — jeden Morgen in 20 Minuten.',url:'https://open.spotify.com/show/3tMwolVmLPxyXuZPQu26kQ'},
+  {s:'Hotel Matze',h:'Große Namen, ganz offen',p:'Matze Hielscher im langen, persönlichen Gespräch — Kult unter den Interview-Podcasts.',url:'https://open.spotify.com/show/0ivn4wyUBScv57XS8vbVaa'},
+  {s:'Lanz + Precht',h:'Der Freitags-Disput fürs Denken',p:'Markus Lanz und Richard David Precht streiten sich wöchentlich durch die großen Fragen der Zeit.',url:'https://open.spotify.com/show/4bGWMQA1ANGTgcysDo14aX'}
+];
 
 /* Reihenfolge der Blöcke auf der Seite */
 const ORDER=['politik','wirtschaft','__unternehmen','boerse','__pb','sport','promi','film','genuss','__pb','tech','gesundheit','panorama'];
@@ -355,7 +359,7 @@ function render(d){
     html+=s;
   });
   // Podcasts
-  const podsFixHTML=d.podcastsFix.map(p=>`<a class="pod fix" href="${esc(p.url)}" target="_blank" rel="noopener"><div><div class="kick">${esc(p.s)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><span class="cta">▶ Spotify</span></div></a>`).join('');
+  const podsFixHTML=PODCASTS_FIX.map(p=>`<a class="pod fix" href="${esc(p.url)}" target="_blank" rel="noopener"><div><div class="kick">${esc(p.s)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><span class="cta">▶ Spotify</span></div></a>`).join('');
   // Fallback auf Spotify-Suche nur als Übergangsschutz, solange der Worker mit dem alten
   // Podcast-Schema (ohne "url") noch nicht neu deployt ist — siehe worker.js PODCAST_POOL.
   const podsHTML=d.podcasts.slice(0,6).map((p,i)=>`<a class="pod" href="${esc(p.url||('https://open.spotify.com/search/'+encodeURIComponent(p.h||'')))}" target="_blank" rel="noopener"><div class="n">${i+1}</div><div>${p.s?`<div class="kick">${esc(p.s)}</div>`:''}<h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><span class="cta">▶ Spotify</span></div></a>`).join('');
