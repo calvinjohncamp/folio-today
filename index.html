@@ -107,9 +107,15 @@ main{padding:26px 0 64px}
 .cc.ch li::before{background:var(--pos)} .cc.ri li::before{background:var(--neg)}
 
 .maerkte{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
-@media(max-width:760px){.maerkte{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+  .maerkte{grid-template-columns:repeat(2,1fr)}
+  /* Schmales Format: S&P500+Nasdaq / Dow+DAX / HangSeng+Durchschnitt / Gold+Bitcoin / WAX allein */
+  .mk:nth-child(1){order:1} .mk:nth-child(4){order:2} .mk:nth-child(7){order:3}
+  .mk:nth-child(2){order:4} .mk:nth-child(5){order:5} .mk:nth-child(8){order:6}
+  .mk:nth-child(3){order:7} .mk:nth-child(6){order:8} .mk:nth-child(9){order:9}
+}
 @media(max-width:420px){.maerkte{grid-template-columns:1fr}}
-.mk{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mk{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px 16px;overflow:hidden}
 .mk-col{display:flex;flex-direction:column}
 .mk-chg-solo.mk-chg-bottom{margin-top:auto}
 .mk .l{font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.15;letter-spacing:-.2px;color:var(--muted);margin-bottom:8px}
@@ -123,7 +129,10 @@ main{padding:26px 0 64px}
 .mk-chg-l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 /* WAX-Kachel: linke Zahlen (Gesamtwert/pro Person) oben, rechte Zahlen (Heute/YTD) unten —
    unabhängig positioniert per absolute Platzierung, damit die eine Seite die andere nicht verdrängt. */
-.mk-wax-body{position:relative;flex:1}
+/* min-height nötig, weil das WAX-Feld im schmalen Format allein in seiner Zeile steht
+   (keine Nachbarkachel mehr, die die Zeilenhöhe vorgibt) — sonst kollabiert der Bereich
+   auf die Höhe der Überschrift und die absolut positionierten Werte laufen aus der Kachel. */
+.mk-wax-body{position:relative;flex:1;min-height:100px}
 .mk-wax-stats{position:absolute;top:0;left:0;display:flex;flex-direction:column;gap:10px}
 .mk-wax-v{font-size:16.5px;font-weight:700;white-space:nowrap}
 .mk-wax-h{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
