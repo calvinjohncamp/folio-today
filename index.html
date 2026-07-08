@@ -106,11 +106,17 @@ main{padding:26px 0 64px}
 .cc li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
 .cc.ch li::before{background:var(--pos)} .cc.ri li::before{background:var(--neg)}
 
-.maerkte{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-@media(max-width:760px){.maerkte{grid-template-columns:repeat(3,1fr)}}
-.mk{background:var(--card);padding:12px;text-align:center}
-.mk .l{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.mk .v{font-size:15px;font-weight:700} .mk .v.pos{color:var(--pos)} .mk .v.neg{color:var(--neg)}
+.maerkte{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+@media(max-width:760px){.maerkte{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.maerkte{grid-template-columns:1fr}}
+.mk{background:var(--card);padding:13px 14px}
+.mk .l{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.mk-hero{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:9px}
+.mk-price{font-size:16.5px;font-weight:700}
+.mk .v{font-family:var(--mono);font-size:12px;font-weight:700} .mk .v.pos{color:var(--pos)} .mk .v.neg{color:var(--neg)}
+.mk-sub{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);padding-top:8px;border-top:1px solid var(--line2)}
+.mk-cr{margin-top:5px;font-weight:700}
+.mk-cr .pos{color:var(--pos)} .mk-cr .neg{color:var(--neg)}
 
 .pods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:760px){.pods{grid-template-columns:1fr}}
@@ -307,15 +313,30 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 /* echter Deep-Link: Artikel-URL aus den Daten, sonst Google-Suche der Überschrift (greift beim Beispiel-Briefing) */
 function lnk(it){return it&&it.url?String(it.url):('https://www.google.com/search?q='+encodeURIComponent((it&&it.h)||''));}
 /* === Live-Kurse direkt im Browser (Yahoo-Worker) — taggenau bei jedem Aufruf === */
-const MK=[{l:'DAX',t:'^GDAXI'},{l:'Dow',t:'^DJI'},{l:'Nasdaq',t:'^IXIC'},{l:'S&P 500',t:'^GSPC'},{l:'Bitcoin',t:'BTC-EUR'},{l:'Gold',t:'GC=F'}];
+const MK=[{l:'DAX',t:'^GDAXI',unit:'Pkt.',dec:0},{l:'Dow',t:'^DJI',unit:'Pkt.',dec:0},{l:'Nasdaq',t:'^IXIC',unit:'Pkt.',dec:0},{l:'S&P 500',t:'^GSPC',unit:'Pkt.',dec:0},{l:'Bitcoin',t:'BTC-EUR',unit:'€',dec:0},{l:'Gold',t:'GC=F',unit:'$',dec:0}];
 let __coTicker='';
 async function cfq(t){try{const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000));if(!r.ok)return null;const j=await r.json();const price=Number(j.price??j.regularMarketPrice??0)||null;const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null;const pe=Number(j.trailingPE??0)||null;const mc=Number(j.marketCap??0)||null;return price?{price,prev,pe,mc}:null;}catch(e){return null;}}
+// 52-Wochen-Hoch/Tief aus der Tageshistorie (identisches Prinzip wie die "Kaufkurse"-Analyse in Folio.wax).
+async function cfHist(t){try{const r=await fetch('https://jk-invest.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/3600000));if(!r.ok)return null;const j=await r.json();const closes=(j.prices||[]).map(p=>Number(p&&p.close)).filter(Number.isFinite);if(!closes.length)return null;return{high:Math.max(...closes),low:Math.min(...closes)};}catch(e){return null;}}
 function fmtPct(v){const s=v>=0?'+':'−';return s+Math.abs(v*100).toFixed(1).replace('.',',')+'%';}
+function fmtLevel(v,unit,dec){if(v==null||isNaN(v))return '—';return v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec})+' '+unit;}
 // Marktkapitalisierung kompakt formatieren: ab 1 Mrd. in "Mrd. €", sonst in "Mio. €".
 function fmtMarketCap(v){if(v==null||isNaN(v)||v<=0)return null;if(v>=1e9)return (v/1e9).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' Mrd. €';return (v/1e6).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' Mio. €';}
 function fillLive(){
   const box=document.getElementById('maerkteBox');
-  if(box) box.querySelectorAll('.mk').forEach(cell=>{cfq(cell.getAttribute('data-t')).then(q=>{const v=cell.querySelector('.v');if(!v)return;if(q&&q.price&&q.prev){const ch=(q.price-q.prev)/q.prev;v.textContent=fmtPct(ch);v.className='v '+(ch>=0?'pos':'neg');}else{v.textContent='—';}});});
+  if(box) box.querySelectorAll('.mk').forEach(cell=>{
+    const t=cell.getAttribute('data-t'), unit=cell.getAttribute('data-unit'), dec=Number(cell.getAttribute('data-dec'))||0;
+    Promise.all([cfq(t),cfHist(t)]).then(([q,h])=>{
+      const v=cell.querySelector('.v'), price=cell.querySelector('.mk-price'), hi=cell.querySelector('.mk-hi'), lo=cell.querySelector('.mk-lo'), ch=cell.querySelector('.mk-chance'), ri=cell.querySelector('.mk-risk');
+      if(q&&q.price&&q.prev&&v){const p=(q.price-q.prev)/q.prev;v.textContent=fmtPct(p);v.className='v '+(p>=0?'pos':'neg');}
+      else if(v){v.textContent='—';}
+      if(price) price.textContent=(q&&q.price)?fmtLevel(q.price,unit,dec):'—';
+      if(hi) hi.textContent='Hoch '+((h&&h.high!=null)?fmtLevel(h.high,unit,dec):'—');
+      if(lo) lo.textContent='Tief '+((h&&h.low!=null)?fmtLevel(h.low,unit,dec):'—');
+      if(ch){ if(q&&q.price&&h&&h.high!=null){const up=h.high/q.price-1;ch.textContent='Potential '+fmtPct(up);ch.className='mk-chance '+(up>=0?'pos':'neg');} else ch.textContent='Potential —'; }
+      if(ri){ if(q&&q.price&&h&&h.low!=null){const dn=h.low/q.price-1;ri.textContent='Risiko '+fmtPct(dn);ri.className='mk-risk '+(dn>=0?'pos':'neg');} else ri.textContent='Risiko —'; }
+    });
+  });
   if(__coTicker){cfq(__coTicker).then(q=>{const m=document.getElementById('coMetrics');if(!q||!m)return;const c=m.querySelectorAll('.metric .v');if(c[0]&&q.price)c[0].textContent=q.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';if(c[1]&&q.prev){const ch=(q.price-q.prev)/q.prev;c[1].textContent=fmtPct(ch);c[1].className='v '+(ch>=0?'pos':'neg');}if(c[2]){const mc=fmtMarketCap(q.mc);if(mc)c[2].textContent=mc;}if(c[3]&&q.pe)c[3].textContent=q.pe.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});});}
 }
 function cardHTML(it,extra){
@@ -336,7 +357,12 @@ function ressortHTML(r){
   const more=restItems.length?`<div class="grid-more">${restItems.map(it=>cardHTML(it,'')).join('')}</div>`:'';
   return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${main}</div>${more}</section>`;
 }
-function maerkteHTML(){return `<div class="maerkte" id="maerkteBox">${MK.map(m=>`<div class="mk" data-t="${esc(m.t)}"><div class="l">${esc(m.l)}</div><div class="v">·</div></div>`).join('')}</div>`;}
+function maerkteHTML(){return `<div class="maerkte" id="maerkteBox">${MK.map(m=>`<div class="mk" data-t="${esc(m.t)}" data-unit="${esc(m.unit)}" data-dec="${m.dec}">
+  <div class="l">${esc(m.l)}</div>
+  <div class="mk-hero"><span class="mk-price">·</span><span class="v">·</span></div>
+  <div class="mk-sub"><span class="mk-hi">Hoch ·</span><span class="mk-lo">Tief ·</span></div>
+  <div class="mk-sub mk-cr"><span class="mk-chance">Potential ·</span><span class="mk-risk">Risiko ·</span></div>
+</div>`).join('')}</div>`;}
 function featureHTML(u){
   const met=u.metrics.map(m=>`<div class="metric"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('');
   const ch=u.chancen.map(x=>`<li>${esc(x)}</li>`).join(''); const ri=u.risiken.map(x=>`<li>${esc(x)}</li>`).join('');
