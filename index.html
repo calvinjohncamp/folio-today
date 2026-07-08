@@ -106,16 +106,30 @@ main{padding:26px 0 64px}
 .cc li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
 .cc.ch li::before{background:var(--pos)} .cc.ri li::before{background:var(--neg)}
 
-.maerkte{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+.maerkte{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
 @media(max-width:760px){.maerkte{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:420px){.maerkte{grid-template-columns:1fr}}
-.mk{background:var(--card);padding:13px 14px}
-.mk .l{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
-.mk-hero{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:9px}
-.mk-price{font-size:16.5px;font-weight:700}
+.mk{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mk-col{display:flex;flex-direction:column}
+.mk-chg-solo.mk-chg-bottom{margin-top:auto}
+.mk .l{font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.15;letter-spacing:-.2px;color:var(--muted);margin-bottom:8px}
+.mk-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.mk-price{font-size:16.5px;font-weight:700;white-space:nowrap}
 .mk .v{font-family:var(--mono);font-size:12px;font-weight:700} .mk .v.pos{color:var(--pos)} .mk .v.neg{color:var(--neg)}
-.mk-sub{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);padding-top:8px;border-top:1px solid var(--line2)}
-.mk-cr{margin-top:5px;font-weight:700}
+.mk-chg{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+.mk-chg-solo{align-items:flex-end;gap:9px;margin-top:2px}
+.mk-chg-solo .v{font-size:15px}
+.mk-chg-row{display:flex;align-items:baseline;gap:6px}
+.mk-chg-l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* WAX-Kachel: linke Zahlen (Gesamtwert/pro Person) oben, rechte Zahlen (Heute/YTD) unten —
+   unabhängig positioniert per absolute Platzierung, damit die eine Seite die andere nicht verdrängt. */
+.mk-wax-body{position:relative;flex:1}
+.mk-wax-stats{position:absolute;top:0;left:0;display:flex;flex-direction:column;gap:10px}
+.mk-wax-v{font-size:16.5px;font-weight:700;white-space:nowrap}
+.mk-wax-h{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
+.mk-wax-chg{position:absolute;bottom:0;right:0;margin-top:0}
+.mk-sub{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:9px;border-top:1px solid var(--line2)}
+.mk-cr{margin-top:6px;font-weight:700}
 .mk-cr .pos{color:var(--pos)} .mk-cr .neg{color:var(--neg)}
 
 .pods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -313,30 +327,66 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 /* echter Deep-Link: Artikel-URL aus den Daten, sonst Google-Suche der Überschrift (greift beim Beispiel-Briefing) */
 function lnk(it){return it&&it.url?String(it.url):('https://www.google.com/search?q='+encodeURIComponent((it&&it.h)||''));}
 /* === Live-Kurse direkt im Browser (Yahoo-Worker) — taggenau bei jedem Aufruf === */
-const MK=[{l:'DAX',t:'^GDAXI',unit:'Pkt.',dec:0},{l:'Dow',t:'^DJI',unit:'Pkt.',dec:0},{l:'Nasdaq',t:'^IXIC',unit:'Pkt.',dec:0},{l:'S&P 500',t:'^GSPC',unit:'Pkt.',dec:0},{l:'Bitcoin',t:'BTC-EUR',unit:'€',dec:0},{l:'Gold',t:'GC=F',unit:'$',dec:0}];
+// 'index' = echter Ticker mit voller Kachel (Kurs, Heute, YTD, 52W-Hoch/Tief, Potential/Risiko).
+// 'avg'   = synthetische Kachel, Mittelwert aus Heute/YTD der unter avgOf genannten Ticker.
+// 'wax'   = Folio.WAX-Depot — bislang statisch aus der WAX-Übersicht übernommen (echte Live-Anbindung folgt in Schritt 2).
+const MK=[
+  {l:'S&P 500',t:'^GSPC',unit:'Pkt.',dec:0,kind:'index'},
+  {l:'DAX',t:'^GDAXI',unit:'Pkt.',dec:0,kind:'index'},
+  {l:'Gold',t:'GC=F',unit:'$',dec:0,kind:'index'},
+  {l:'Nasdaq',t:'^IXIC',unit:'Pkt.',dec:0,kind:'index'},
+  {l:'Hang Seng',t:'^HSI',unit:'Pkt.',dec:0,kind:'index'},
+  {l:'Bitcoin',t:'BTC-EUR',unit:'€',dec:0,kind:'index'},
+  {l:'Dow',t:'^DJI',unit:'Pkt.',dec:0,kind:'index'},
+  {l:'Durchschnitt Benchmarks',kind:'avg',avgOf:['^GSPC','^IXIC','^DJI','^GDAXI','^HSI']},
+  // Gesamtwert & Ø pro Person wie auf der WAX-Startseite — noch statisch, wird in Schritt 2 an dieselbe
+  // Live-Quelle angebunden, aus der sich Folio.wax selbst bedient (nicht dauerhaft eingefroren).
+  {l:'WAX',kind:'wax',gesamtwert:'204.664,59 €',proPerson:'34.110,77 €',today:-0.0088,ytd:0.0359},
+];
 let __coTicker='';
 async function cfq(t){try{const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000));if(!r.ok)return null;const j=await r.json();const price=Number(j.price??j.regularMarketPrice??0)||null;const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null;const pe=Number(j.trailingPE??0)||null;const mc=Number(j.marketCap??0)||null;return price?{price,prev,pe,mc}:null;}catch(e){return null;}}
-// 52-Wochen-Hoch/Tief aus der Tageshistorie (identisches Prinzip wie die "Kaufkurse"-Analyse in Folio.wax).
-async function cfHist(t){try{const r=await fetch('https://jk-invest.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/3600000));if(!r.ok)return null;const j=await r.json();const closes=(j.prices||[]).map(p=>Number(p&&p.close)).filter(Number.isFinite);if(!closes.length)return null;return{high:Math.max(...closes),low:Math.min(...closes)};}catch(e){return null;}}
+// 52-Wochen-Hoch/Tief + YTD-Basis (Schlusskurs vom ersten Handelstag des laufenden Jahres) aus derselben
+// rollierenden 12-Monats-Historie — identisches Prinzip wie die "Kaufkurse"-Analyse in Folio.wax.
+async function cfHist(t){try{const r=await fetch('https://jk-invest.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/3600000));if(!r.ok)return null;const j=await r.json();const prices=(j.prices||[]).map(p=>({date:p&&p.date,close:Number(p&&p.close)})).filter(p=>p.date&&Number.isFinite(p.close));if(!prices.length)return null;const closes=prices.map(p=>p.close);const yearPrefix=String(new Date().getFullYear())+'-';const firstOfYear=prices.find(p=>p.date.startsWith(yearPrefix));return{high:Math.max(...closes),low:Math.min(...closes),ytdBase:firstOfYear?firstOfYear.close:null};}catch(e){return null;}}
 function fmtPct(v){const s=v>=0?'+':'−';return s+Math.abs(v*100).toFixed(1).replace('.',',')+'%';}
+function arrow(v){return v>=0?'▲ ':'▼ ';}
 function fmtLevel(v,unit,dec){if(v==null||isNaN(v))return '—';return v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec})+' '+unit;}
 // Marktkapitalisierung kompakt formatieren: ab 1 Mrd. in "Mrd. €", sonst in "Mio. €".
 function fmtMarketCap(v){if(v==null||isNaN(v)||v<=0)return null;if(v>=1e9)return (v/1e9).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' Mrd. €';return (v/1e6).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' Mio. €';}
 function fillLive(){
   const box=document.getElementById('maerkteBox');
-  if(box) box.querySelectorAll('.mk').forEach(cell=>{
-    const t=cell.getAttribute('data-t'), unit=cell.getAttribute('data-unit'), dec=Number(cell.getAttribute('data-dec'))||0;
-    Promise.all([cfq(t),cfHist(t)]).then(([q,h])=>{
-      const v=cell.querySelector('.v'), price=cell.querySelector('.mk-price'), hi=cell.querySelector('.mk-hi'), lo=cell.querySelector('.mk-lo'), ch=cell.querySelector('.mk-chance'), ri=cell.querySelector('.mk-risk');
-      if(q&&q.price&&q.prev&&v){const p=(q.price-q.prev)/q.prev;v.textContent=fmtPct(p);v.className='v '+(p>=0?'pos':'neg');}
-      else if(v){v.textContent='—';}
-      if(price) price.textContent=(q&&q.price)?fmtLevel(q.price,unit,dec):'—';
-      if(hi) hi.textContent='Hoch '+((h&&h.high!=null)?fmtLevel(h.high,unit,dec):'—');
-      if(lo) lo.textContent='Tief '+((h&&h.low!=null)?fmtLevel(h.low,unit,dec):'—');
-      if(ch){ if(q&&q.price&&h&&h.high!=null){const up=h.high/q.price-1;ch.textContent='Potential '+fmtPct(up);ch.className='mk-chance '+(up>=0?'pos':'neg');} else ch.textContent='Potential —'; }
-      if(ri){ if(q&&q.price&&h&&h.low!=null){const dn=h.low/q.price-1;ri.textContent='Risiko '+fmtPct(dn);ri.className='mk-risk '+(dn>=0?'pos':'neg');} else ri.textContent='Risiko —'; }
+  if(box){
+    const results={}; // Ticker -> {today, ytd} — Basis für die "Durchschnitt Benchmarks"-Kachel
+    const indexCells=[...box.querySelectorAll('.mk[data-t]')];
+    const fetches=indexCells.map(cell=>{
+      const t=cell.getAttribute('data-t'), unit=cell.getAttribute('data-unit'), dec=Number(cell.getAttribute('data-dec'))||0;
+      return Promise.all([cfq(t),cfHist(t)]).then(([q,h])=>{
+        const price=cell.querySelector('.mk-price'), todayEl=cell.querySelector('.mk-today'), ytdEl=cell.querySelector('.mk-ytd'), hi=cell.querySelector('.mk-hi'), lo=cell.querySelector('.mk-lo'), ch=cell.querySelector('.mk-chance'), ri=cell.querySelector('.mk-risk');
+        let todayVal=null, ytdVal=null;
+        if(q&&q.price&&q.prev) todayVal=(q.price-q.prev)/q.prev;
+        if(q&&q.price&&h&&h.ytdBase) ytdVal=(q.price-h.ytdBase)/h.ytdBase;
+        results[t]={today:todayVal,ytd:ytdVal};
+        if(price) price.textContent=(q&&q.price)?fmtLevel(q.price,unit,dec):'—';
+        if(todayEl){ if(todayVal!=null){todayEl.textContent=fmtPct(todayVal);todayEl.className='v mk-today '+(todayVal>=0?'pos':'neg');} else todayEl.textContent='—'; }
+        if(ytdEl){ if(ytdVal!=null){ytdEl.textContent=fmtPct(ytdVal);ytdEl.className='v mk-ytd '+(ytdVal>=0?'pos':'neg');} else ytdEl.textContent='—'; }
+        if(hi) hi.textContent='Hoch '+((h&&h.high!=null)?fmtLevel(h.high,unit,dec):'—');
+        if(lo) lo.textContent='Tief '+((h&&h.low!=null)?fmtLevel(h.low,unit,dec):'—');
+        if(ch){ if(q&&q.price&&h&&h.high!=null){const up=h.high/q.price-1;ch.textContent='Potential '+fmtPct(up);ch.className='mk-chance '+(up>=0?'pos':'neg');} else ch.textContent='Potential —'; }
+        if(ri){ if(q&&q.price&&h&&h.low!=null){const dn=h.low/q.price-1;ri.textContent='Risiko '+fmtPct(dn);ri.className='mk-risk '+(dn>=0?'pos':'neg');} else ri.textContent='Risiko —'; }
+      });
     });
-  });
+    Promise.all(fetches).then(()=>{
+      const avgCell=box.querySelector('.mk[data-kind="avg"]');
+      if(!avgCell) return;
+      const of=(avgCell.getAttribute('data-avgof')||'').split(',').filter(Boolean);
+      const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;
+      const todayAvg=avg(of.map(t=>results[t]&&results[t].today).filter(v=>v!=null));
+      const ytdAvg=avg(of.map(t=>results[t]&&results[t].ytd).filter(v=>v!=null));
+      const todayEl=avgCell.querySelector('.mk-today'), ytdEl=avgCell.querySelector('.mk-ytd');
+      if(todayEl){ if(todayAvg!=null){todayEl.textContent=arrow(todayAvg)+fmtPct(todayAvg);todayEl.className='v mk-today '+(todayAvg>=0?'pos':'neg');} else todayEl.textContent='—'; }
+      if(ytdEl){ if(ytdAvg!=null){ytdEl.textContent=arrow(ytdAvg)+fmtPct(ytdAvg);ytdEl.className='v mk-ytd '+(ytdAvg>=0?'pos':'neg');} else ytdEl.textContent='—'; }
+    });
+  }
   if(__coTicker){cfq(__coTicker).then(q=>{const m=document.getElementById('coMetrics');if(!q||!m)return;const c=m.querySelectorAll('.metric .v');if(c[0]&&q.price)c[0].textContent=q.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';if(c[1]&&q.prev){const ch=(q.price-q.prev)/q.prev;c[1].textContent=fmtPct(ch);c[1].className='v '+(ch>=0?'pos':'neg');}if(c[2]){const mc=fmtMarketCap(q.mc);if(mc)c[2].textContent=mc;}if(c[3]&&q.pe)c[3].textContent=q.pe.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});});}
 }
 function cardHTML(it,extra){
@@ -357,12 +407,41 @@ function ressortHTML(r){
   const more=restItems.length?`<div class="grid-more">${restItems.map(it=>cardHTML(it,'')).join('')}</div>`:'';
   return `<section class="ressort" id="${r.id}">${magHTML(r.no,r.ey,r.title,r.tag)}<div class="grid">${main}</div>${more}</section>`;
 }
-function maerkteHTML(){return `<div class="maerkte" id="maerkteBox">${MK.map(m=>`<div class="mk" data-t="${esc(m.t)}" data-unit="${esc(m.unit)}" data-dec="${m.dec}">
+function mkChgHTML(extra){return `<div class="mk-chg${extra?' '+extra:''}">
+    <div class="mk-chg-row"><span class="mk-chg-l">Heute</span><span class="v mk-today">·</span></div>
+    <div class="mk-chg-row"><span class="mk-chg-l">YTD</span><span class="v mk-ytd">·</span></div>
+  </div>`;}
+function mkTileHTML(m){
+  if(m.kind==='avg'){
+    return `<div class="mk mk-col" data-kind="avg" data-avgof="${esc((m.avgOf||[]).join(','))}">
+    <div class="l">Durchschnitt<br>Benchmarks</div>
+    ${mkChgHTML('mk-chg-solo mk-chg-bottom')}
+  </div>`;
+  }
+  if(m.kind==='wax'){
+    const todayHTML=m.today==null?'<span class="v mk-today">—</span>':`<span class="v mk-today ${m.today>=0?'pos':'neg'}">${arrow(m.today)}${fmtPct(m.today)}</span>`;
+    return `<div class="mk mk-col" data-kind="wax">
+    <div class="l">${esc(m.l)}</div>
+    <div class="mk-wax-body">
+      <div class="mk-wax-stats">
+        <div class="mk-wax-stat"><div class="mk-wax-v">${esc(m.gesamtwert)}</div><div class="mk-wax-h">Gesamtwert WAX-Club</div></div>
+        <div class="mk-wax-stat"><div class="mk-wax-v">${esc(m.proPerson)}</div><div class="mk-wax-h">Ø pro Person</div></div>
+      </div>
+      <div class="mk-chg mk-chg-solo mk-wax-chg">
+        <div class="mk-chg-row"><span class="mk-chg-l">Heute</span>${todayHTML}</div>
+        <div class="mk-chg-row"><span class="mk-chg-l">YTD</span><span class="v mk-ytd ${m.ytd>=0?'pos':'neg'}">${arrow(m.ytd)}${fmtPct(m.ytd)}</span></div>
+      </div>
+    </div>
+  </div>`;
+  }
+  return `<div class="mk" data-t="${esc(m.t)}" data-unit="${esc(m.unit)}" data-dec="${m.dec}">
   <div class="l">${esc(m.l)}</div>
-  <div class="mk-hero"><span class="mk-price">·</span><span class="v">·</span></div>
+  <div class="mk-hero"><span class="mk-price">·</span>${mkChgHTML()}</div>
   <div class="mk-sub"><span class="mk-hi">Hoch ·</span><span class="mk-lo">Tief ·</span></div>
   <div class="mk-sub mk-cr"><span class="mk-chance">Potential ·</span><span class="mk-risk">Risiko ·</span></div>
-</div>`).join('')}</div>`;}
+</div>`;
+}
+function maerkteHTML(){return `<div class="maerkte" id="maerkteBox">${MK.map(mkTileHTML).join('')}</div>`;}
 function featureHTML(u){
   const met=u.metrics.map(m=>`<div class="metric"><div class="l">${esc(m.l)}</div><div class="v ${m.cls||''}">${esc(m.v)}</div></div>`).join('');
   const ch=u.chancen.map(x=>`<li>${esc(x)}</li>`).join(''); const ri=u.risiken.map(x=>`<li>${esc(x)}</li>`).join('');
