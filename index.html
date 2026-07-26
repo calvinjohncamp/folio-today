@@ -676,14 +676,16 @@
   }
 
   // ======================= Live-Kurse (Märkte-Kacheln + Aktie) =======================
+  // Reihenfolge: Zeile 1 = S&P 500 · Dow · Nasdaq · DAX  ·  Zeile 2 = Hang Seng · Gold · Bitcoin · Ø.
+  // Bitcoin in US-Dollar (BTC-USD) — damit sind auch 52-Wochen-Hoch/Tief & Potential/Risiko auf Dollarbasis.
   const MK = [
     {l:'S&P 500', t:'^GSPC',  unit:'Pkt.', dec:0, kind:'index'},
-    {l:'DAX',     t:'^GDAXI', unit:'Pkt.', dec:0, kind:'index'},
-    {l:'Gold',    t:'GC=F',   unit:'$',    dec:0, kind:'index'},
-    {l:'Nasdaq',  t:'^IXIC',  unit:'Pkt.', dec:0, kind:'index'},
-    {l:'Hang Seng',t:'^HSI',  unit:'Pkt.', dec:0, kind:'index'},
-    {l:'Bitcoin', t:'BTC-EUR',unit:'€',    dec:0, kind:'index'},
     {l:'Dow',     t:'^DJI',   unit:'Pkt.', dec:0, kind:'index'},
+    {l:'Nasdaq',  t:'^IXIC',  unit:'Pkt.', dec:0, kind:'index'},
+    {l:'DAX',     t:'^GDAXI', unit:'Pkt.', dec:0, kind:'index'},
+    {l:'Hang Seng',t:'^HSI',  unit:'Pkt.', dec:0, kind:'index'},
+    {l:'Gold',    t:'GC=F',   unit:'$',    dec:0, kind:'index'},
+    {l:'Bitcoin', t:'BTC-USD',unit:'$',    dec:0, kind:'index'},
     {l:'Ø Benchmarks', kind:'avg', avgOf:['^GSPC','^IXIC','^DJI','^GDAXI','^HSI']},
   ];
   async function cfq(t){ try{ const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000)); if(!r.ok)return null; const j=await r.json(); const price=Number(j.price??j.regularMarketPrice??0)||null; const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null; const pe=Number(j.trailingPE??0)||null; const mc=Number(j.marketCap??0)||null; return price?{price,prev,pe,mc}:null; }catch(e){ return null; } }
