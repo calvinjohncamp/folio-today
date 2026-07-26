@@ -46,12 +46,12 @@
   .wx-dateline .ed{font-weight:700;color:var(--flag);letter-spacing:.03em;}
 
   /* ================= RESSORT-MENÜ (sticky, sitzt UNTER dem Einstieg) ================= */
-  .wx-nav{position:sticky;top:0;z-index:90;background:var(--paper);border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule-strong);margin:34px 0 0;}
+  .wx-nav{position:sticky;top:0;z-index:90;background:var(--paper);border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule-strong);margin:20px 0 6px;}
   .wx-nav-in{max-width:1180px;margin:0 auto;padding:0 26px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);
     mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent);}
   .wx-nav-in::-webkit-scrollbar{display:none;}
-  .wx-nav a{flex:none;font-family:var(--font-sans);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);padding:11px 12px;white-space:nowrap;border-bottom:2px solid transparent;transition:.15s;}
+  .wx-nav a{flex:none;font-family:var(--font-sans);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);padding:8px 12px 12px;white-space:nowrap;border-bottom:2px solid transparent;transition:.15s;}
   .wx-nav a:hover{color:var(--ink);}
   .wx-nav a.active{color:var(--flag);border-bottom-color:var(--flag);}
 
@@ -165,7 +165,10 @@
   .wx-block{columns:3;column-gap:34px;column-rule:1px solid var(--rule);border-top:3px double var(--rule-strong);padding-top:26px;margin-top:34px;}
   @media (max-width:940px){ .wx-block{columns:2;} }
   @media (max-width:600px){ .wx-block{columns:1;} }
-  .wx-block-title{column-span:all;font-family:var(--font-sans);font-weight:700;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 18px;}
+  /* Rubrik-Kopf spannt die volle Breite → die 6 Artikel darunter starten in ALLEN
+     Spalten auf derselben Linie (sonst drückt der Kopf nur Spalte 1 nach unten). */
+  .wx-block .wx-rubric{column-span:all;}
+  .wx-block .wx-rubric:first-child{margin-top:0;}
 
   a.wx-digest-item{display:block;break-inside:avoid;margin:0 0 12px;padding-bottom:11px;border-bottom:1px solid var(--rule);}
   a.wx-digest-item:hover h4{color:var(--flag);}
@@ -377,11 +380,8 @@
 
   <div class="wx-wrap">
 
-    <!-- Block 1: Welt & Politik -->
-    <div class="wx-block" id="blockPolitik"></div>
-
-    <!-- Block 2: Wirtschaft & Tech -->
-    <div class="wx-block" id="blockWirtschaft"></div>
+    <!-- Block 1: Politik & Welt · Wirtschaft & Unternehmen · Tech & KI (zusammengelegt) -->
+    <div class="wx-block" id="blockNachrichten"></div>
 
     <!-- Märkte im Blick (Live) -->
     <section class="wx-section" id="wxMarkets">
@@ -495,10 +495,9 @@
 
   // Thematische Blöcke: Börse steckt im Einstieg (6 Finanzen-Karten), erscheint hier NICHT doppelt.
   const BLOCKS = [
-    { mount:'blockPolitik',    title:'Welt & Politik',            keys:['politik'] },
-    { mount:'blockWirtschaft', title:'Wirtschaft & Technik',      keys:['wirtschaft','tech'] },
-    { mount:'blockBoulevardA', title:'Sport, Gesundheit & Genuss', keys:['sport','gesundheit','genuss'] },
-    { mount:'blockBoulevardB', title:'Promi, Panorama & Kultur',  keys:['promi','panorama','film'] },
+    { mount:'blockNachrichten', keys:['politik','wirtschaft','tech'] },
+    { mount:'blockBoulevardA',  keys:['sport','gesundheit','genuss'] },
+    { mount:'blockBoulevardB',  keys:['promi','panorama','film'] },
   ];
   const NAV = [
     ['wxLead','Aufmacher'],['r-politik','Politik'],['r-wirtschaft','Wirtschaft'],['r-tech','Tech'],
@@ -617,9 +616,11 @@
   }
 
   // ---- Themenblock (3-Spalten-Fluss über eine oder mehrere Rubriken) ----
+  // Jede Rubrik-Überschrift spannt (per CSS) die volle Breite, darunter starten ihre
+  // 6 Artikel in allen Spalten auf derselben Linie. Kein separates Super-Label mehr.
   function blockHTML(block, ressorts){
     if(!ressorts) return '';
-    const inner = block.keys.map(key => {
+    return block.keys.map(key => {
       const r = ressorts[key];
       const items = (r && r.items) || [];
       if(!items.length) return '';
@@ -627,8 +628,6 @@
       return '<div class="wx-rubric" id="r-'+key+'"><span class="dot">◆</span>'+esc(title)+'</div>'
         + items.map(digestItem).join('');
     }).join('');
-    if(!inner) return '';
-    return '<div class="wx-block-title">'+esc(block.title)+'</div>' + inner;
   }
 
   // ---- Aktie des Tages ----
