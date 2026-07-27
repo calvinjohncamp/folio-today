@@ -198,6 +198,7 @@
   .wx-section-head.weather-head h2{flex:1 1 auto;}
   .wx-section-head.weather-head h2 small{font-family:var(--font-sans);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);}
   .wx-section-note{margin-left:auto;font-size:11px;color:var(--ink-faint);letter-spacing:.05em;align-self:flex-end;}
+  .wx-mk-stamp{font-size:11px;color:var(--ink-faint);letter-spacing:.04em;margin-top:12px;text-align:right;}
 
   /* ---- Märkte-Kacheln (Live) ---- */
   .wx-mk-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1.5px solid var(--ink);}
@@ -413,6 +414,7 @@
         <span class="wx-section-note">Live-Kurse · 52-Wochen-Spanne</span>
       </div>
       <div class="wx-mk-grid" id="wxMkGrid"></div>
+      <div class="wx-mk-stamp" id="wxKurseStamp"></div>
     </section>
 
     <!-- Aktie des Tages -->
@@ -754,11 +756,21 @@
     {l:'Bitcoin', t:'BTC-USD',unit:'$',    dec:0, kind:'index'},
     {l:'Ø Benchmarks', kind:'avg', avgOf:['^GSPC','^IXIC','^DJI','^GDAXI','^HSI']},
   ];
-  async function cfq(t){ try{ const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000)); if(!r.ok)return null; const j=await r.json(); const price=Number(j.price??j.regularMarketPrice??0)||null; const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null; const pe=Number(j.trailingPE??0)||null; const mc=Number(j.marketCap??0)||null; return price?{price,prev,pe,mc}:null; }catch(e){ return null; } }
+  async function cfq(t){ try{ const r=await fetch('https://wax-kurse.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/60000)); if(!r.ok)return null; const j=await r.json(); const price=Number(j.price??j.regularMarketPrice??0)||null; const prev=Number(j.previousClose??j.regularMarketPreviousClose??0)||null; const pe=Number(j.trailingPE??0)||null; const mc=Number(j.marketCap??0)||null; const mt=Number(j.marketTime??j.regularMarketTime??0)||null; return price?{price,prev,pe,mc,mt}:null; }catch(e){ return null; } }
   async function cfHist(t){ try{ const r=await fetch('https://jk-invest.calvinjohncamp.workers.dev/?ticker='+encodeURIComponent(t)+'&_='+Math.floor(Date.now()/3600000)); if(!r.ok)return null; const j=await r.json(); const prices=(j.prices||[]).map(p=>({date:p&&p.date,close:Number(p&&p.close)})).filter(p=>p.date&&Number.isFinite(p.close)); if(!prices.length)return null; const closes=prices.map(p=>p.close); const yearPrefix=String(new Date().getFullYear())+'-'; const firstOfYear=prices.find(p=>p.date.startsWith(yearPrefix)); return{high:Math.max(...closes),low:Math.min(...closes),ytdBase:firstOfYear?firstOfYear.close:null}; }catch(e){ return null; } }
   function fmtPct(v){ if(v==null||isNaN(v))return null; const s=v>=0?'+':'−'; return s+Math.abs(v*100).toFixed(1).replace('.',',')+'%'; }
   function fmtLevel(v,unit,dec){ if(v==null||isNaN(v))return '—'; return v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec})+' '+unit; }
   function fmtMarketCap(v){ if(v==null||isNaN(v)||v<=0)return null; if(v>=1e9)return (v/1e9).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' Mrd. €'; return (v/1e6).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' Mio. €'; }
+  // Zeitstempel unter den Kurskacheln: Die Kurse werden bei JEDEM Seitenaufruf live geholt,
+  // daher zeigt der Hinweis den Zeitpunkt dieses Abrufs (Berliner Zeit).
+  function stampKurse(mtSec){
+    const el=document.getElementById('wxKurseStamp'); if(!el) return;
+    // mtSec = echte Börsenzeit der Kurse (Unix-Sekunden); fehlt sie, Abrufzeitpunkt als Rückfall.
+    const d = (mtSec && mtSec>0) ? new Date(mtSec*1000) : new Date();
+    const dat=d.toLocaleDateString('de-DE',{timeZone:'Europe/Berlin',day:'2-digit',month:'2-digit',year:'numeric'});
+    const zeit=d.toLocaleTimeString('de-DE',{timeZone:'Europe/Berlin',hour:'2-digit',minute:'2-digit'});
+    el.textContent='Kurse · Stand '+dat+', '+zeit+' Uhr';
+  }
 
   function mkTileHTML(m){
     if(m.kind==='avg'){
@@ -782,6 +794,7 @@
     const box = document.getElementById('wxMkGrid');
     if(!box) return;
     const results = {};
+    const marketTimes = [];   // echte Datenzeitpunkte der Aktienindizes (ohne Gold/Bitcoin, die ~24/7 handeln)
     const cells = [].slice.call(box.querySelectorAll('.wx-mk[data-t]'));
     const fetches = cells.map(cell => {
       const t=cell.getAttribute('data-t'), unit=cell.getAttribute('data-unit'), dec=Number(cell.getAttribute('data-dec'))||0;
@@ -792,6 +805,7 @@
         if(q&&q.price&&q.prev) todayVal=(q.price-q.prev)/q.prev;
         if(q&&q.price&&h&&h.ytdBase) ytdVal=(q.price-h.ytdBase)/h.ytdBase;
         results[t]={today:todayVal,ytd:ytdVal};
+        if(q&&q.mt&&t!=='GC=F'&&t!=='BTC-USD') marketTimes.push(q.mt);
         if(price) price.textContent=(q&&q.price)?fmtLevel(q.price,unit,dec):'—';
         if(todayEl){ if(todayVal!=null){todayEl.textContent=fmtPct(todayVal);todayEl.className='v mk-today '+(todayVal>=0?'pos':'neg');} else todayEl.textContent='—'; }
         if(ytdEl){ if(ytdVal!=null){ytdEl.textContent=fmtPct(ytdVal);ytdEl.className='v mk-ytd '+(ytdVal>=0?'pos':'neg');} else ytdEl.textContent='—'; }
@@ -802,6 +816,7 @@
       });
     });
     Promise.all(fetches).then(() => {
+      stampKurse(marketTimes.length ? Math.max.apply(null, marketTimes) : null);
       const avgCell=box.querySelector('.wx-mk[data-kind="avg"]');
       if(!avgCell) return;
       const of=(avgCell.getAttribute('data-avgof')||'').split(',').filter(Boolean);
