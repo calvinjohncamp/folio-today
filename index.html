@@ -256,6 +256,7 @@
   .wx-wx-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);font-size:11.5px;color:var(--ink-soft);}
   .wx-wx-meta span{min-width:0;line-height:1.25;}
   .wx-wx-meta b{display:block;color:var(--ink);font-weight:700;margin-top:2px;white-space:nowrap;}
+  .wx-wx-meta em{display:block;font-style:normal;color:var(--rain);font-size:10.5px;font-weight:700;margin-top:2px;white-space:nowrap;}
   .wx-wx-days{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
   @media (max-width:620px){ .wx-wx-days{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:380px){ .wx-wx-days{grid-template-columns:repeat(2,1fr);} }
@@ -1093,6 +1094,21 @@
         }
         return rows.length ? wxWeightedRainStats(rows) : {rain:null, wetHours:null};
       }
+      function forecastOutdoorRain(dateKey){
+        const hourly = d.hourly || {};
+        if(!hourly.time || !hourly.precipitation) return null;
+        let rain = 0;
+        let found = false;
+        for(let hour=8; hour<=21; hour++){
+          const stamp = dateKey+'T'+String(hour).padStart(2,'0')+':00';
+          const i = hourly.time.findIndex(t => t === stamp);
+          if(i >= 0){
+            found = true;
+            rain += Math.max(0,Number(hourly.precipitation[i]||0));
+          }
+        }
+        return found ? rain : null;
+      }
       function wxHoursLabel(mood){
         const text = mood && mood.t ? String(mood.t) : '';
         if(text.indexOf('Schnee') >= 0) return 'Schneestunden';
@@ -1122,6 +1138,7 @@
         const wind = dl.wind_speed_10m_max && dl.wind_speed_10m_max[idx];
         const wetHours = dl.time && dl.time[idx] ? forecastWetHours(dl.time[idx]) : null;
         const outdoor = dl.time && dl.time[idx] ? forecastWindowStats(dl.time[idx]) : {rain:null, wetHours:null};
+        const outdoorRain = dl.time && dl.time[idx] ? forecastOutdoorRain(dl.time[idx]) : null;
         const moodRain = outdoor.rain == null ? rain : outdoor.rain;
         const moodWet = outdoor.wetHours == null ? wetHours : outdoor.wetHours;
         const dm = wxFriendlyMood(baseMood,moodRain,moodWet,max,sunHoursForDay(idx));
@@ -1135,7 +1152,7 @@
           + '<div class="wx-wx-cond">'+esc(dm.t)+' · '+esc(dayName.format(new Date(dl.time[idx]+'T12:00:00')))+'</div></div></div>'
           + '</div>'
           + '<div class="wx-wx-meta">'
-          + '<span>Niederschlag gesamt <b>'+mm(rain)+' mm</b></span>'
+          + '<span>Niederschlag 24h <b>'+mm(rain)+' mm</b>'+(outdoorRain!=null ? '<em>8-22 Uhr: '+mm(outdoorRain)+' mm</em>' : '')+'</span>'
           + (wetHours!=null ? '<span>'+hoursLabel+' <b>'+wetHours+'</b></span>' : '')
           + '<span>Wind <b>bis '+round(wind)+' km/h</b></span>'
           + '</div>';
@@ -1158,6 +1175,10 @@
         const winds = rows.map(w=>Number(w.wind_gust_speed||w.wind_speed)).filter(v=>!Number.isNaN(v));
         const rain = rows.reduce((sum,w)=>sum+Number(w.precipitation||0),0);
         const wetHours = rows.filter(w=>Number(w.precipitation||0)>0).length;
+        const outdoorRain = rows.reduce((sum,w)=>{
+          const h = wxDataTime(w).getHours();
+          return h >= 8 && h < 22 ? sum + Number(w.precipitation||0) : sum;
+        },0);
         const dm = wxBrightMood(rows);
         const hoursLabel = wxHoursLabel(dm);
         const min = temps.length ? Math.min(...temps) : null;
@@ -1172,7 +1193,7 @@
           + '<div class="wx-wx-cond">'+esc(dm.t)+' · '+esc(dayName.format(new Date(dateKey+'T12:00:00')))+'</div></div></div>'
           + '</div>'
           + '<div class="wx-wx-meta">'
-          + '<span>Niederschlag gesamt <b>'+mm(rain)+' mm</b></span>'
+          + '<span>Niederschlag 24h <b>'+mm(rain)+' mm</b><em>8-22 Uhr: '+mm(outdoorRain)+' mm</em></span>'
           + '<span>'+hoursLabel+' <b>'+wetHours+'</b></span>'
           + '<span>Wind <b>bis '+round(wind)+' km/h</b></span>'
           + '</div>';
@@ -1197,7 +1218,7 @@
             + '<div class="track"><div class="fill" style="height:'+Math.max(2,h)+'%"></div><span class="temp">'+(temp==null?'–':temp+'°')+'</span></div>'
             + '<span class="hr">'+hour+'</span></div>';
         }
-        el.innerHTML = '<div class="hd"><span>'+esc(title)+'</span><b>'+mm(windowRain)+' mm/Tag</b></div><div class="wx-wx-bars">'+bars+'</div>';
+        el.innerHTML = '<div class="hd"><span>'+esc(title)+'</span><b>'+mm(windowRain)+' mm</b></div><div class="wx-wx-bars">'+bars+'</div>';
         el.style.display = '';
       }
       renderHourlyBox(document.getElementById('wxWeatherTodayHourly'), todayKey, 'Niederschlag heute · 8 bis 22 Uhr · Prognose');
@@ -1219,7 +1240,7 @@
             + '<div class="track"><div class="fill" style="height:'+Math.max(2,h)+'%"></div><span class="temp">'+(temp==null?'–':temp+'°')+'</span></div>'
             + '<span class="hr">'+hour+'</span></div>';
         }
-        el.innerHTML = '<div class="hd"><span>Niederschlag gestern · 8 bis 22 Uhr · DWD/Bright Sky</span><b>'+mm(windowRain)+' mm/Tag</b></div><div class="wx-wx-bars">'+bars+'</div>';
+        el.innerHTML = '<div class="hd"><span>Niederschlag gestern · 8 bis 22 Uhr · DWD/Bright Sky</span><b>'+mm(windowRain)+' mm</b></div><div class="wx-wx-bars">'+bars+'</div>';
         el.style.display = '';
       }
       renderObservedHourlyBox(document.getElementById('wxWeatherYesterdayHourly'), yesterdayRows, yesterdayKey);
