@@ -669,8 +669,17 @@
 
   // ---- Aktie des Tages ----
   let __coTicker = '';
+  const DEFAULT_UNTERNEHMEN = {
+    name:'SAP',
+    sub:'SOFTWARE · WKN 716460 · ISIN DE0007164600 · XETRA',
+    ticker:'SAP.DE',
+    metrics:[{l:'Kurs',v:'—'},{l:'Heute',v:'—'},{l:'Marktkap.',v:'—'},{l:'KGV',v:'—'}],
+    body:'SAP steht als Europas größter Softwarekonzern für planbare Cloud-Erlöse und eine starke Stellung bei Unternehmenssoftware. Die Aktie ist liquide handelbar und liefert zuverlässig aktuelle Kursdaten.',
+    chancen:['Cloud-Geschäft sorgt für wiederkehrende Erlöse','KI-Funktionen können die Produktbindung stärken','Hohe Liquidität macht die Aktie gut beobachtbar'],
+    risiken:['Hohe Bewertung erhöht die Erwartungen','Konjunkturschwäche kann IT-Budgets bremsen','Starker Wettbewerb im Cloud- und KI-Umfeld']
+  };
   function unternehmenHTML(u){
-    if(!u || !u.name || u.name==='—') return null;
+    if(!u || !u.name || u.name==='—') u = DEFAULT_UNTERNEHMEN;
     __coTicker = u.ticker || '';
     const metrics = (u.metrics && u.metrics.length ? u.metrics : [{l:'Kurs',v:'—'},{l:'Heute',v:'—'},{l:'Marktkap.',v:'—'},{l:'KGV',v:'—'}]);
     const met = metrics.map(m => '<div class="wx-co-metric"><div class="l">'+esc(m.l)+'</div><div class="v '+(m.cls||'')+'">'+esc(m.v)+'</div></div>').join('');
