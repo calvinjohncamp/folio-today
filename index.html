@@ -193,6 +193,10 @@
   .wx-section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
   .wx-section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--flag);}
   .wx-section-head h2{font-family:var(--font-display);font-weight:700;font-size:24px;margin:0;color:var(--ink);}
+  .wx-section-head.weather-head{row-gap:8px;margin-bottom:20px;}
+  .wx-section-head.weather-head .wx-section-eyebrow{flex-basis:100%;}
+  .wx-section-head.weather-head h2{flex:1 1 auto;}
+  .wx-section-head.weather-head h2 small{font-family:var(--font-sans);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);}
   .wx-section-note{margin-left:auto;font-size:11px;color:var(--ink-faint);letter-spacing:.05em;align-self:flex-end;}
 
   /* ---- Märkte-Kacheln (Live) ---- */
@@ -238,16 +242,20 @@
   .wx-co-link:hover{text-decoration:underline;}
 
   /* ---- Wetter ---- */
-  .wx-weather{display:grid;grid-template-columns:minmax(230px,300px) 1fr;gap:22px;align-items:stretch;}
-  @media (max-width:760px){ .wx-weather{grid-template-columns:1fr;} }
-  .wx-wx-today{border:1.5px solid var(--ink);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(160deg,#FBF7EE,#F0EADB);}
+  .wx-weather{display:grid;gap:16px;}
+  .wx-wx-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;}
+  @media (max-width:760px){ .wx-wx-pair{grid-template-columns:1fr;} }
+  .wx-wx-today{border:1.5px solid var(--ink);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(160deg,#FBF7EE,#F0EADB);min-height:190px;}
+  .wx-wx-today.yesterday{border-color:var(--rule-strong);background:linear-gradient(160deg,#F4EFE4,#FBF7EE);}
   .wx-wx-today-top{display:flex;align-items:center;gap:14px;}
   .wx-wx-today-top svg{flex:none;width:64px;height:64px;}
-  .wx-wx-temp{font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1;color:var(--ink);}
+  .wx-wx-temp{font-family:var(--font-display);font-weight:700;font-size:40px;line-height:1;color:var(--ink);}
+  .wx-wx-range{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:4px;}
   .wx-wx-cond{font-size:13px;color:var(--ink-soft);margin-top:3px;line-height:1.3;}
   .wx-wx-place{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--flag);margin-bottom:10px;}
-  .wx-wx-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-soft);}
-  .wx-wx-meta b{color:var(--ink);font-weight:700;}
+  .wx-wx-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);font-size:11.5px;color:var(--ink-soft);}
+  .wx-wx-meta span{min-width:0;line-height:1.25;}
+  .wx-wx-meta b{display:block;color:var(--ink);font-weight:700;margin-top:2px;white-space:nowrap;}
   .wx-wx-days{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
   @media (max-width:620px){ .wx-wx-days{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:380px){ .wx-wx-days{grid-template-columns:repeat(2,1fr);} }
@@ -256,16 +264,21 @@
   .wx-wx-day svg{width:38px;height:38px;display:block;margin:0 auto 8px;}
   .wx-wx-day .hi{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--ink);}
   .wx-wx-day .lo{font-size:12px;color:var(--ink-faint);margin-top:1px;}
-  .wx-wx-day .pp{font-size:10.5px;color:var(--rain);margin-top:6px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .wx-wx-day .mm,.wx-wx-day .wind{font-size:10.5px;color:var(--ink-soft);margin-top:4px;font-weight:600;font-variant-numeric:tabular-nums;}
   /* Stündliche Regenkurve */
-  .wx-wx-hourly{margin-top:18px;border:1px solid var(--rule);border-radius:14px;padding:14px 18px 12px;background:#FBF7EE;}
-  .wx-wx-hourly .hd{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;}
-  .wx-wx-bars{display:flex;align-items:flex-end;gap:6px;}
+  .wx-wx-hourly{border:1px solid var(--rule);border-radius:14px;padding:14px 18px 12px;background:#FBF7EE;}
+  .wx-wx-hourly-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:760px){ .wx-wx-hourly-grid{grid-template-columns:1fr;} }
+  .wx-wx-hourly .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;}
+  .wx-wx-hourly .hd span{min-width:0;line-height:1.25;}
+  .wx-wx-hourly .hd b{flex:none;border:1px solid rgba(74,144,217,.22);border-radius:999px;background:rgba(74,144,217,.06);padding:4px 8px;color:var(--ink-soft);font-size:10px;font-weight:600;letter-spacing:.02em;white-space:nowrap;text-transform:none;}
+  .wx-wx-bars{display:flex;align-items:flex-end;gap:5px;}
   .wx-wx-bar{flex:1;display:flex;flex-direction:column;align-items:center;}
-  .wx-wx-bar .pct{font-size:9px;color:var(--rain);font-weight:700;height:12px;line-height:12px;}
-  .wx-wx-bar .track{width:100%;max-width:22px;height:64px;display:flex;align-items:flex-end;background:rgba(74,144,217,.10);border-radius:5px;overflow:hidden;}
+  .wx-wx-bar .track{position:relative;width:100%;max-width:22px;height:64px;display:flex;align-items:flex-end;background:rgba(74,144,217,.10);border-radius:5px;overflow:hidden;}
   .wx-wx-bar .fill{width:100%;background:var(--rain);border-radius:5px 5px 0 0;min-height:2px;}
-  .wx-wx-bar .hr{font-size:9.5px;color:var(--ink-faint);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .wx-wx-bar .temp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:600;color:rgba(31,45,68,.62);line-height:1;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.7);}
+  .wx-wx-bar .hr{font-size:9.5px;color:var(--ink);font-weight:500;margin-top:6px;font-variant-numeric:tabular-nums;}
+  .wx-wx-bar .mm{font-size:8.8px;color:var(--ink);font-weight:600;height:14px;line-height:1;white-space:nowrap;}
 
   /* ================= PODCASTS ================= */
   .wx-pod-section{border-top:3px double var(--rule-strong);padding-top:22px;margin-top:34px;scroll-margin-top:60px;}
@@ -426,16 +439,22 @@
 
     <!-- Wetter (zwischen den beiden Boulevard-Hälften) -->
     <section class="wx-section" id="wxWeather" style="display:none">
-      <div class="wx-section-head">
+      <div class="wx-section-head weather-head">
         <span class="wx-section-eyebrow">Wetter</span>
-        <h2>Wiehl · heute + Ausblick</h2>
+        <h2>Wiehl · gestern, heute, Ausblick</h2>
         <span class="wx-section-note" id="wxWeatherNote">51674 Wiehl</span>
       </div>
       <div class="wx-weather">
-        <div class="wx-wx-today" id="wxWeatherToday"></div>
+        <div class="wx-wx-pair">
+          <div class="wx-wx-today" id="wxWeatherToday"></div>
+          <div class="wx-wx-today yesterday" id="wxWeatherYesterday"></div>
+        </div>
+        <div class="wx-wx-hourly-grid">
+          <div class="wx-wx-hourly" id="wxWeatherTodayHourly" style="display:none"></div>
+          <div class="wx-wx-hourly" id="wxWeatherYesterdayHourly" style="display:none"></div>
+        </div>
         <div class="wx-wx-days" id="wxWeatherDays"></div>
       </div>
-      <div class="wx-wx-hourly" id="wxWeatherHourly" style="display:none"></div>
     </section>
 
     <!-- Block 3b: Promi, Panorama & Kultur -->
@@ -862,35 +881,135 @@
   }
 
   // ======================= WETTER (Open-Meteo, Wiehl 51674) =======================
-  const WX_LAT = 50.949, WX_LON = 7.546;
+  const WX_LAT = 50.9499, WX_LON = 7.5518;
   function wxMap(code){
     const c = Number(code);
-    if(c===0) return {t:'Klar',ic:'sun'};
-    if(c===1) return {t:'Überwiegend klar',ic:'sun'};
-    if(c===2) return {t:'Teils bewölkt',ic:'partly'};
-    if(c===3) return {t:'Bewölkt',ic:'cloud'};
-    if(c===45||c===48) return {t:'Nebel',ic:'fog'};
-    if(c>=51&&c<=57) return {t:'Nieselregen',ic:'rain'};
+    if(c===0) return {t:'Sonnig',ic:'sun'};
+    if(c===1) return {t:'Heiter',ic:'heiter'};
+    if(c===2) return {t:'Heiter',ic:'heiter'};
+    if(c===3) return {t:'Bewölkt',ic:'bewoelkt'};
+    if(c===45||c===48) return {t:'Bewölkt',ic:'bewoelkt'};
+    if(c>=51&&c<=57) return {t:'Bewölkt, zeitweise Regen',ic:'cloud-rain'};
     if(c>=61&&c<=67) return {t:'Regen',ic:'rain'};
     if(c>=71&&c<=77) return {t:'Schnee',ic:'snow'};
-    if(c>=80&&c<=82) return {t:'Regenschauer',ic:'rain'};
-    if(c===85||c===86) return {t:'Schneeschauer',ic:'snow'};
+    if(c===80||c===81) return {t:'Bewölkt, zeitweise Regen',ic:'cloud-rain'};
+    if(c===82) return {t:'Regen',ic:'rain'};
+    if(c===85||c===86) return {t:'Schnee',ic:'snow'};
     if(c>=95) return {t:'Gewitter',ic:'thunder'};
-    return {t:'Wechselhaft',ic:'partly'};
+    return {t:'Bewölkt',ic:'bewoelkt'};
+  }
+  function wxDateKeyLocal(d){
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function wxIsoLocal(d){
+    return wxDateKeyLocal(d)+'T'+String(d.getHours()).padStart(2,'0')+':00';
+  }
+  function wxDataTime(w){
+    return new Date(w.timestamp);
+  }
+  function wxHourRow(rows,dateKey,hour){
+    return (rows||[]).find(w => {
+      const t = wxDataTime(w);
+      return wxDateKeyLocal(t) === dateKey && t.getHours() === hour;
+    }) || null;
+  }
+  function wxWeightedRainStats(rows){
+    const all = rows || [];
+    const outdoor = all.filter(w => {
+      const h = wxDataTime(w).getHours();
+      return h >= 8 && h < 22;
+    });
+    const other = all.filter(w => {
+      const h = wxDataTime(w).getHours();
+      return h < 8 || h >= 22;
+    });
+    const sumRain = list => list.reduce((sum,w)=>sum+Number(w.precipitation||0),0);
+    const wetCount = list => list.filter(w=>Number(w.precipitation||0)>0).length;
+    const outdoorRain = sumRain(outdoor);
+    const otherRain = sumRain(other);
+    const outdoorWet = wetCount(outdoor);
+    const otherWet = wetCount(other);
+    return {
+      rain: outdoorRain * 0.7 + otherRain * 0.3,
+      wetHours: outdoorWet * 0.7 + otherWet * 0.3
+    };
+  }
+  function wxBrightMood(rows){
+    const weighted = wxWeightedRainStats(rows || []);
+    const temps = (rows||[]).map(w=>Number(w.temperature)).filter(v=>!Number.isNaN(v));
+    const maxTemp = temps.length ? Math.max(...temps) : null;
+    return wxFriendlyMood(wxObservedBaseMood(rows || []),weighted.rain,weighted.wetHours,maxTemp,null);
+  }
+  function wxObservedBaseMood(rows){
+    const all = rows || [];
+    const text = all.map(w => String(w.condition || w.icon || w.weather || '').toLowerCase()).join(' ');
+    const rain = all.reduce((sum,w)=>sum+Number(w.precipitation||0),0);
+    const temps = all.map(w=>Number(w.temperature)).filter(v=>!Number.isNaN(v));
+    const maxTemp = temps.length ? Math.max(...temps) : null;
+    if(/thunder|gewitter|storm/.test(text)) return {t:'Gewitter',ic:'thunder'};
+    if(/snow|schnee|sleet|graupel|hail/.test(text)) return {t:'Schnee',ic:'snow'};
+    if(rain > 0 && maxTemp != null && maxTemp <= 1) return {t:'Schnee',ic:'snow'};
+    return {t:'Bewölkt',ic:'bewoelkt'};
+  }
+  function wxFriendlyMood(base,rain,wetHours,maxTemp,sunHours){
+    const mm = Number(rain || 0);
+    const wet = Number(wetHours || 0);
+    const sun = sunHours == null || Number.isNaN(sunHours) ? null : Number(sunHours);
+    const isSnow = base && base.ic === 'snow';
+    if(base && base.ic === 'thunder') return {t:'Gewitter',ic:'thunder'};
+    if(mm >= 5) return isSnow ? {t:'Schnee',ic:'snow'} : {t:'Regen',ic:'rain'};
+    if(mm >= 0.3){
+      if(isSnow){
+        if(sun != null && sun >= 5) return {t:'Heiter, zeitweise Schnee',ic:'heiter-snow'};
+        return {t:'Bewölkt, zeitweise Schnee',ic:'cloud-snow'};
+      }
+      if(sun != null && sun >= 5) return {t:'Heiter, zeitweise Regen',ic:'heiter-rain'};
+      return {t:'Bewölkt, zeitweise Regen',ic:'cloud-rain'};
+    }
+    if(mm > 0 || wet > 0){
+      if(sun != null && sun >= 5) return {t:'Heiter',ic:'heiter'};
+      return {t:'Bewölkt',ic:'bewoelkt'};
+    }
+    if(sun != null){
+      if(sun >= 10) return {t:'Sonnig',ic:'sun'};
+      if(sun >= 5) return {t:'Heiter',ic:'heiter'};
+      return {t:'Bewölkt',ic:'bewoelkt'};
+    }
+    if(base.ic === 'sun') return {t:'Sonnig',ic:'sun'};
+    if(base.ic === 'heiter') return {t:'Heiter',ic:'heiter'};
+    if(base.ic === 'snow') return {t:'Bewölkt',ic:'bewoelkt'};
+    return {t:'Bewölkt',ic:'bewoelkt'};
+  }
+  async function wxFetchBrightSkyDay(dateKey){
+    const dayStart = new Date(dateKey+'T00:00:00');
+    const dayEnd = new Date(dateKey+'T23:00:00');
+    const url = 'https://api.brightsky.dev/weather?lat='+WX_LAT+'&lon='+WX_LON
+      + '&date='+encodeURIComponent(wxIsoLocal(dayStart))
+      + '&last_date='+encodeURIComponent(wxIsoLocal(dayEnd))
+      + '&tz=Europe%2FBerlin';
+    const r = await fetch(url,{cache:'no-store'});
+    if(!r.ok) throw new Error('Bright Sky HTTP '+r.status);
+    const json = await r.json();
+    return Array.isArray(json.weather) ? json.weather : [];
   }
   function wxIcon(key,size){
     const s = size||48;
     const open = '<svg viewBox="0 0 64 64" width="'+s+'" height="'+s+'" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
     const cloud = (fill,stroke,x,y,sc)=>'<g transform="translate('+x+','+y+') scale('+sc+')"><path d="M18 44h26a11 11 0 0 0 2-21.7A15 15 0 0 0 16 20a11 11 0 0 0 2 24z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"/></g>';
     const rays = '<g stroke="#F5A623" stroke-width="3" stroke-linecap="round"><path d="M32 5v7M32 52v7M5 32h7M52 32h7M12 12l5 5M47 47l5 5M52 12l-5 5M12 52l5-5"/></g>';
+    const flakes = '<g stroke="#7FB5E6" stroke-width="2" stroke-linecap="round"><path d="M24 48v8M20 52h8M21.5 49.5l5 5M26.5 49.5l-5 5M40 48v8M36 52h8M37.5 49.5l5 5M42.5 49.5l-5 5"/></g>';
     switch(key){
       case 'sun':
         return open + rays + '<circle cx="32" cy="32" r="13" fill="#FBC02D" stroke="#F5A623" stroke-width="2"/></svg>';
       case 'partly':
+      case 'heiter':
         return open
-          + '<circle cx="24" cy="22" r="10" fill="#FBC02D" stroke="#F5A623" stroke-width="2"/>'
-          + '<g stroke="#F5A623" stroke-width="2.4" stroke-linecap="round"><path d="M24 4v5M6 22h5M11 9l3.5 3.5M37 9l-3.5 3.5M24 40v-5"/></g>'
-          + cloud('#DCE6EC','#9FB2C0', 8, 8, .9) + '</svg>';
+          + '<circle cx="26" cy="25" r="14" fill="#FBC02D" stroke="#F5A623" stroke-width="2"/>'
+          + '<g stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"><path d="M26 3v7M26 40v7M4 25h7M41 25h7M10 9l5 5M38 38l5 5M43 9l-5 5M10 41l5-5"/></g>'
+          + cloud('#DCE6EC','#9FB2C0', 22, 16, .62) + '</svg>';
+      case 'wolkig':
+      case 'bewoelkt':
+        return open + cloud('#DCE6EC','#9FB2C0', 4, 4, 1) + '</svg>';
       case 'cloud':
         return open + cloud('#E3EAEF','#B4C0C8', 2, 6, .95) + cloud('#CBD7DE','#9FB2C0', 6, 2, 1) + '</svg>';
       case 'fog':
@@ -899,12 +1018,31 @@
       case 'rain':
         return open + cloud('#CBD7DE','#9FB2C0', 4, -4, 1)
           + '<g stroke="#4A90D9" stroke-width="3.4" stroke-linecap="round"><path d="M20 46l-3 8M32 46l-3 8M44 46l-3 8"/></g></svg>';
+      case 'light-rain':
+      case 'heiter-rain':
+        return open
+          + '<circle cx="24" cy="22" r="12" fill="#FBC02D" stroke="#F5A623" stroke-width="2"/>'
+          + '<g stroke="#F5A623" stroke-width="2.3" stroke-linecap="round"><path d="M24 4v6M6 23h6M11 9l4 4M40 10l-4 4"/></g>'
+          + cloud('#DCE6EC','#9FB2C0', 12, 8, .82)
+          + '<g stroke="#4A90D9" stroke-width="2.8" stroke-linecap="round"><path d="M30 48l-2.5 7M43 48l-2.5 7"/></g></svg>';
+      case 'cloud-rain':
+        return open + cloud('#DCE6EC','#9FB2C0', 4, 0, .98)
+          + '<g stroke="#4A90D9" stroke-width="2.9" stroke-linecap="round"><path d="M25 47l-2.5 7M39 47l-2.5 7"/></g></svg>';
+      case 'heiter-snow':
+        return open
+          + '<circle cx="24" cy="22" r="12" fill="#FBC02D" stroke="#F5A623" stroke-width="2"/>'
+          + '<g stroke="#F5A623" stroke-width="2.3" stroke-linecap="round"><path d="M24 4v6M6 23h6M11 9l4 4M40 10l-4 4"/></g>'
+          + cloud('#DCE6EC','#9FB2C0', 12, 8, .82)
+          + flakes + '</svg>';
+      case 'cloud-snow':
+        return open + cloud('#DCE6EC','#9FB2C0', 4, 0, .98) + flakes + '</svg>';
       case 'snow':
         return open + cloud('#DCE6EC','#B4C0C8', 4, -4, 1)
-          + '<g fill="#7FB5E6"><circle cx="19" cy="50" r="2.4"/><circle cx="31" cy="55" r="2.4"/><circle cx="43" cy="50" r="2.4"/></g></svg>';
+          + '<g stroke="#7FB5E6" stroke-width="2.2" stroke-linecap="round"><path d="M18 47v8M14 51h8M15.5 48.5l5 5M20.5 48.5l-5 5M32 50v8M28 54h8M29.5 51.5l5 5M34.5 51.5l-5 5M46 47v8M42 51h8M43.5 48.5l5 5M48.5 48.5l-5 5"/></g></svg>';
       case 'thunder':
         return open + cloud('#B9C6CE','#8CA0AC', 4, -4, 1)
-          + '<path d="M32 44l-8 12h7l-3 9 12-15h-7l3-6z" fill="#FBC02D" stroke="#F5A623" stroke-width="1.5"/></svg>';
+          + '<g stroke="#4A90D9" stroke-width="2.8" stroke-linecap="round"><path d="M22 47l-2.5 7M44 47l-2.5 7"/></g>'
+          + '<path d="M33 42l-8 13h7l-4 10 13-16h-7l4-7z" fill="#FBC02D" stroke="#F5A623" stroke-width="1.5"/></svg>';
       default:
         return open + cloud('#DCE6EC','#B4C0C8', 4, 4, 1) + '</svg>';
     }
@@ -912,77 +1050,205 @@
   async function loadWeather(){
     try{
       const url = 'https://api.open-meteo.com/v1/forecast?latitude='+WX_LAT+'&longitude='+WX_LON
-        + '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m'
-        + '&hourly=precipitation_probability'
-        + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
-        + '&timezone=Europe%2FBerlin&forecast_days=6';
+        + '&current=temperature_2m,weather_code,wind_speed_10m'
+        + '&hourly=temperature_2m,precipitation,wind_speed_10m'
+        + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,sunshine_duration'
+        + '&timezone=Europe%2FBerlin&forecast_days=7&past_days=1';
       const r = await fetch(url);
       if(!r.ok) return;
       const d = await r.json();
       const cur = d.current || {};
       const dl = d.daily || {};
-      const m = wxMap(cur.weather_code);
       const round = v => (v==null||isNaN(v)) ? '—' : Math.round(v);
-      const todayMax = dl.temperature_2m_max && dl.temperature_2m_max[0];
-      const todayMin = dl.temperature_2m_min && dl.temperature_2m_min[0];
+      const mm = v => (v==null||isNaN(v)) ? '—' : Number(v).toLocaleString('de-DE',{maximumFractionDigits:1});
+      const dayIndex = dateStr => (dl.time||[]).findIndex(x => x === dateStr);
+      const todayKey = wxDateKeyLocal(new Date());
+      const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate()-1);
+      const yesterdayKey = wxDateKeyLocal(yesterdayDate);
+      const todayIdx = Math.max(0, dayIndex(todayKey));
+      const yIdx = Math.max(0, dayIndex(yesterdayKey));
+      const dayName = new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'2-digit'});
+      const shortDay = new Intl.DateTimeFormat('de-DE',{weekday:'short'});
+      function forecastWetHours(dateKey){
+        const hourly = d.hourly || {};
+        if(!hourly.time || !hourly.precipitation) return null;
+        let count = 0;
+        for(let hour=0; hour<24; hour++){
+          const stamp = dateKey+'T'+String(hour).padStart(2,'0')+':00';
+          const i = hourly.time.findIndex(t => t === stamp);
+          if(i >= 0 && Number(hourly.precipitation[i]||0) > 0) count++;
+        }
+        return count;
+      }
+      function forecastWindowStats(dateKey){
+        const hourly = d.hourly || {};
+        if(!hourly.time || !hourly.precipitation) return {rain:null, wetHours:null};
+        const rows = [];
+        for(let hour=0; hour<24; hour++){
+          const stamp = dateKey+'T'+String(hour).padStart(2,'0')+':00';
+          const i = hourly.time.findIndex(t => t === stamp);
+          if(i >= 0){
+            rows.push({timestamp:stamp, precipitation:Number(hourly.precipitation[i]||0)});
+          }
+        }
+        return rows.length ? wxWeightedRainStats(rows) : {rain:null, wetHours:null};
+      }
+      function wxHoursLabel(mood){
+        const text = mood && mood.t ? String(mood.t) : '';
+        if(text.indexOf('Schnee') >= 0) return 'Schneestunden';
+        if(text.indexOf('Gewitter') >= 0) return 'Gewitterstunden';
+        return 'Regenstunden';
+      }
+      function wetHoursText(n,mood){
+        const label = wxHoursLabel(mood);
+        if(n == null || isNaN(n)) return '— '+label;
+        return Number(n) === 1 ? '1 '+label.slice(0,-1) : Number(n)+' '+label;
+      }
+      function hourlyMmLabel(v){
+        const amount = Number(v || 0);
+        return amount > 0 ? Number(amount).toLocaleString('de-DE',{maximumFractionDigits:1}) : '0';
+      }
+      function sunHoursForDay(idx){
+        const seconds = dl.sunshine_duration && dl.sunshine_duration[idx];
+        return seconds == null || isNaN(seconds) ? null : Number(seconds) / 3600;
+      }
 
-      const todayEl = document.getElementById('wxWeatherToday');
-      if(todayEl){
-        todayEl.innerHTML =
+      function renderWeatherCard(el, idx, label, isToday){
+        if(!el || idx < 0) return;
+        const baseMood = wxMap(dl.weather_code && dl.weather_code[idx]);
+        const min = dl.temperature_2m_min && dl.temperature_2m_min[idx];
+        const max = dl.temperature_2m_max && dl.temperature_2m_max[idx];
+        const rain = dl.precipitation_sum && dl.precipitation_sum[idx];
+        const wind = dl.wind_speed_10m_max && dl.wind_speed_10m_max[idx];
+        const wetHours = dl.time && dl.time[idx] ? forecastWetHours(dl.time[idx]) : null;
+        const outdoor = dl.time && dl.time[idx] ? forecastWindowStats(dl.time[idx]) : {rain:null, wetHours:null};
+        const moodRain = outdoor.rain == null ? rain : outdoor.rain;
+        const moodWet = outdoor.wetHours == null ? wetHours : outdoor.wetHours;
+        const dm = wxFriendlyMood(baseMood,moodRain,moodWet,max,sunHoursForDay(idx));
+        const hoursLabel = wxHoursLabel(dm);
+        el.innerHTML =
           '<div>'
-          + '<div class="wx-wx-place">Wiehl · heute</div>'
-          + '<div class="wx-wx-today-top">'+wxIcon(m.ic,64)
-          + '<div><div class="wx-wx-temp">'+round(cur.temperature_2m)+'°</div>'
-          + '<div class="wx-wx-cond">'+esc(m.t)+'</div></div></div>'
+          + '<div class="wx-wx-place">Wiehl · '+esc(label)+'</div>'
+          + '<div class="wx-wx-today-top">'+wxIcon(dm.ic,64)
+          + '<div><div class="wx-wx-temp">'+round(max)+'°</div>'
+          + '<div class="wx-wx-range">'+round(min)+' bis '+round(max)+'°</div>'
+          + '<div class="wx-wx-cond">'+esc(dm.t)+' · '+esc(dayName.format(new Date(dl.time[idx]+'T12:00:00')))+'</div></div></div>'
           + '</div>'
           + '<div class="wx-wx-meta">'
-          + '<span>Höchst <b>'+round(todayMax)+'°</b></span>'
-          + '<span>Tief <b>'+round(todayMin)+'°</b></span>'
-          + '<span>Gefühlt <b>'+round(cur.apparent_temperature)+'°</b></span>'
-          + '<span>Wind <b>'+round(cur.wind_speed_10m)+' km/h</b></span>'
-          + '<span>Feuchte <b>'+round(cur.relative_humidity_2m)+'%</b></span>'
+          + '<span>Niederschlag gesamt <b>'+mm(rain)+' mm</b></span>'
+          + (wetHours!=null ? '<span>'+hoursLabel+' <b>'+wetHours+'</b></span>' : '')
+          + '<span>Wind <b>bis '+round(wind)+' km/h</b></span>'
           + '</div>';
       }
 
+      renderWeatherCard(document.getElementById('wxWeatherToday'), todayIdx, 'heute', true);
+      let yesterdayRows = null;
+      try{
+        yesterdayRows = await wxFetchBrightSkyDay(yesterdayKey);
+      }catch(e){
+        yesterdayRows = null;
+      }
+
+      function renderObservedWeatherCard(el, rows, dateKey, fallbackIdx){
+        if(!el || !rows || !rows.length){
+          renderWeatherCard(el, fallbackIdx, 'gestern', false);
+          return;
+        }
+        const temps = rows.map(w=>Number(w.temperature)).filter(v=>!Number.isNaN(v));
+        const winds = rows.map(w=>Number(w.wind_gust_speed||w.wind_speed)).filter(v=>!Number.isNaN(v));
+        const rain = rows.reduce((sum,w)=>sum+Number(w.precipitation||0),0);
+        const wetHours = rows.filter(w=>Number(w.precipitation||0)>0).length;
+        const dm = wxBrightMood(rows);
+        const hoursLabel = wxHoursLabel(dm);
+        const min = temps.length ? Math.min(...temps) : null;
+        const max = temps.length ? Math.max(...temps) : null;
+        const wind = winds.length ? Math.max(...winds) : null;
+        el.innerHTML =
+          '<div>'
+          + '<div class="wx-wx-place">Wiehl · gestern</div>'
+          + '<div class="wx-wx-today-top">'+wxIcon(dm.ic,64)
+          + '<div><div class="wx-wx-temp">'+round(max)+'°</div>'
+          + '<div class="wx-wx-range">'+round(min)+' bis '+round(max)+'°</div>'
+          + '<div class="wx-wx-cond">'+esc(dm.t)+' · '+esc(dayName.format(new Date(dateKey+'T12:00:00')))+'</div></div></div>'
+          + '</div>'
+          + '<div class="wx-wx-meta">'
+          + '<span>Niederschlag gesamt <b>'+mm(rain)+' mm</b></span>'
+          + '<span>'+hoursLabel+' <b>'+wetHours+'</b></span>'
+          + '<span>Wind <b>bis '+round(wind)+' km/h</b></span>'
+          + '</div>';
+      }
+
+      renderObservedWeatherCard(document.getElementById('wxWeatherYesterday'), yesterdayRows, yesterdayKey, yIdx);
+
+      function renderHourlyBox(el, dateKey, title){
+        const hourly = d.hourly || {};
+        if(!el || !hourly.time) return;
+        let bars = '';
+        let windowRain = 0;
+        for(let hour=8; hour<=21; hour++){
+          const stamp = dateKey+'T'+String(hour).padStart(2,'0')+':00';
+          const i = hourly.time.findIndex(t => t === stamp);
+          const amount = i >= 0 && hourly.precipitation ? Math.max(0, Number(hourly.precipitation[i]||0)) : 0;
+          windowRain += amount;
+          const temp = i >= 0 && hourly.temperature_2m ? Math.round(Number(hourly.temperature_2m[i]||0)) : null;
+          const h = Math.min(100, amount * 32);
+          bars += '<div class="wx-wx-bar">'
+            + '<span class="mm">'+hourlyMmLabel(amount)+'</span>'
+            + '<div class="track"><div class="fill" style="height:'+Math.max(2,h)+'%"></div><span class="temp">'+(temp==null?'–':temp+'°')+'</span></div>'
+            + '<span class="hr">'+hour+'</span></div>';
+        }
+        el.innerHTML = '<div class="hd"><span>'+esc(title)+'</span><b>'+mm(windowRain)+' mm/Tag</b></div><div class="wx-wx-bars">'+bars+'</div>';
+        el.style.display = '';
+      }
+      renderHourlyBox(document.getElementById('wxWeatherTodayHourly'), todayKey, 'Niederschlag heute · 8 bis 22 Uhr · Prognose');
+      function renderObservedHourlyBox(el, rows, dateKey){
+        if(!el || !rows || !rows.length){
+          renderHourlyBox(el, dateKey, 'Niederschlag gestern · 8 bis 22 Uhr');
+          return;
+        }
+        let bars = '';
+        let windowRain = 0;
+        for(let hour=8; hour<=21; hour++){
+          const row = wxHourRow(rows,dateKey,hour);
+          const amount = row && row.precipitation != null ? Math.max(0,Number(row.precipitation||0)) : 0;
+          windowRain += amount;
+          const temp = row && row.temperature != null ? Math.round(Number(row.temperature)) : null;
+          const h = Math.min(100, amount * 32);
+          bars += '<div class="wx-wx-bar">'
+            + '<span class="mm">'+hourlyMmLabel(amount)+'</span>'
+            + '<div class="track"><div class="fill" style="height:'+Math.max(2,h)+'%"></div><span class="temp">'+(temp==null?'–':temp+'°')+'</span></div>'
+            + '<span class="hr">'+hour+'</span></div>';
+        }
+        el.innerHTML = '<div class="hd"><span>Niederschlag gestern · 8 bis 22 Uhr · DWD/Bright Sky</span><b>'+mm(windowRain)+' mm/Tag</b></div><div class="wx-wx-bars">'+bars+'</div>';
+        el.style.display = '';
+      }
+      renderObservedHourlyBox(document.getElementById('wxWeatherYesterdayHourly'), yesterdayRows, yesterdayKey);
+
       const daysEl = document.getElementById('wxWeatherDays');
       if(daysEl && dl.time){
-        const wd = new Intl.DateTimeFormat('de-DE',{weekday:'short'});
         let html = '';
-        for(let i=0;i<dl.time.length;i++){
+        let shown = 0;
+        for(let i=todayIdx+1;i<dl.time.length && shown<6;i++){
           const dt = new Date(dl.time[i]+'T12:00:00');
-          const label = i===0 ? 'Heute' : wd.format(dt).replace('.','');
-          const dm = wxMap(dl.weather_code && dl.weather_code[i]);
-          const pp = dl.precipitation_probability_max && dl.precipitation_probability_max[i];
+          const label = shortDay.format(dt).replace('.','');
+          const baseMood = wxMap(dl.weather_code && dl.weather_code[i]);
+          const rain = dl.precipitation_sum && dl.precipitation_sum[i];
+          const wind = dl.wind_speed_10m_max && dl.wind_speed_10m_max[i];
+          const wetHours = forecastWetHours(dl.time[i]);
+          const outdoor = forecastWindowStats(dl.time[i]);
+          const dm = wxFriendlyMood(baseMood,outdoor.rain, outdoor.wetHours,dl.temperature_2m_max[i],sunHoursForDay(i));
           html += '<div class="wx-wx-day">'
             + '<div class="d">'+esc(label)+'</div>'
             + wxIcon(dm.ic,38)
             + '<div class="hi">'+round(dl.temperature_2m_max[i])+'°</div>'
             + '<div class="lo">'+round(dl.temperature_2m_min[i])+'°</div>'
-            + (pp!=null ? '<div class="pp">💧 '+Math.round(pp)+'%</div>' : '')
+            + '<div class="mm">'+mm(rain)+' mm</div>'
+            + (wetHours!=null ? '<div class="mm">'+wetHoursText(wetHours,dm)+'</div>' : '')
+            + '<div class="wind">Wind '+round(wind)+' km/h</div>'
             + '</div>';
+          shown++;
         }
         daysEl.innerHTML = html;
-      }
-
-      // Stündliche Regenwahrscheinlichkeit (ab jetzt, 12 Stunden)
-      const hourly = d.hourly;
-      const hoEl = document.getElementById('wxWeatherHourly');
-      if(hoEl && hourly && hourly.time && hourly.precipitation_probability){
-        const now = new Date();
-        let start = hourly.time.findIndex(t => new Date(t) >= now);
-        if(start < 0) start = 0;
-        const N = 12;
-        let bars = '';
-        for(let i=start;i<start+N && i<hourly.time.length;i++){
-          const p = Math.max(0, Math.round(hourly.precipitation_probability[i]||0));
-          const hr = new Date(hourly.time[i]).getHours();
-          bars += '<div class="wx-wx-bar">'
-            + '<span class="pct">'+(p>=15?p+'%':'')+'</span>'
-            + '<div class="track"><div class="fill" style="height:'+p+'%"></div></div>'
-            + '<span class="hr">'+hr+'</span></div>';
-        }
-        hoEl.innerHTML = '<div class="hd">💧 Regenwahrscheinlichkeit heute im Tagesverlauf</div><div class="wx-wx-bars">'+bars+'</div>';
-        hoEl.style.display = '';
       }
 
       document.getElementById('wxWeather').style.display = '';
