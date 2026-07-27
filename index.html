@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FOLIO·TODAY – Das tägliche Briefing</title>
+<link rel="icon" type="image/png" href="folio-today-favicon.png">
+<link rel="apple-touch-icon" href="folio-today-favicon.png">
 <style>
   :root{
     --paper:#F5F1E8;
@@ -336,7 +338,7 @@
 
       <aside>
         <div class="wx-box">
-          <div class="wx-box-head">Märkte · USA</div>
+          <div class="wx-box-head">Märkte · USA · CNBC</div>
           <div class="wx-box-body" id="wxMarketsUsMount">
             <div class="wx-tickrow"><div class="t-dek">Lade aktuelle Marktmeldungen …</div></div>
           </div>
@@ -492,44 +494,32 @@
 <!-- ============================ REDAKTION / RENDER ============================ -->
 <script>
 (function(){
-  // ===================== MARKE =====================
-  // Eine einzige Newsletter-Version für Folio-WAX, Folio-Invest und Folio-Today.
-  const FOLIO_BRAND = 'today';
-  const BRANDS = {
-    today:  { np:['FOLIO','TODAY'],  tagline:'Das tägliche Briefing', title:'FOLIO·TODAY – Das tägliche Briefing',
-              footer:'Folio.Today',
-              fine:null,
-              back:null },
-    wax:    { np:['FOLIO','WAX'],    tagline:'Headlines', title:'Folio.wax – Headlines',
-              footer:['WAX','Aktienclub seit 2000'], fine:null,
-              back:{href:'index.html', label:'← Folio.wax'} },
-    invest: { np:['FOLIO','INVEST'], tagline:'Headlines', title:'Folio.invest – Headlines',
-              footer:['FOLIO','INVEST'], fine:null,
-              back:{href:'index.html', label:'← Folio.invest'} },
-  };
+  // ===================== MARKE / HERKUNFT =====================
+  // EINE Newsletter-Version, gehostet auf folio-today.de (joern-kaemper.de leitet dorthin um).
+  // Folio-WAX und Folio-Invest zeigen per Weiterleitung (headlines.html → location.replace)
+  // auf dieselbe Seite mit ?from=wax bzw. ?from=invest. Marke ist IMMER „Folio.Today";
+  // der einzige kontextabhängige Unterschied ist der Zurück-Pfeil (Label aus ?from,
+  // Navigation via Browser-Zurück → landet wieder in der jeweiligen App).
   function applyBrand(){
-    const b = BRANDS[FOLIO_BRAND] || BRANDS.today;
-    const host = (location.hostname || '').toLowerCase();
-    const ref = (document.referrer || '').toLowerCase();
-    const back = host.includes('folio-wax') || ref.includes('folio-wax')
-      ? BRANDS.wax.back
-      : (host.includes('folio-invest') || ref.includes('folio-invest') ? BRANDS.invest.back : null);
-    document.title = b.title;
+    document.title = 'FOLIO·TODAY – Das tägliche Briefing';
     const np = document.getElementById('wxNameplate');
-    if(np) np.innerHTML = esc(b.np[0]) + '<span class="dot">·</span>' + esc(b.np[1]);
+    if(np) np.innerHTML = 'FOLIO<span class="dot">·</span>TODAY';
     const tg = document.getElementById('wxTagline');
-    if(tg) tg.textContent = b.tagline;
+    if(tg) tg.textContent = 'Das tägliche Briefing';
     const ft = document.getElementById('wxFooter');
-    if(ft){
-      const main = Array.isArray(b.footer)
-        ? esc(b.footer[0]) + '<span class="dot">•</span>' + esc(b.footer[1])
-        : esc(b.footer);
-      ft.innerHTML = '<a href="#top">' + main + '</a>' + (b.fine ? '<span class="fine">' + esc(b.fine) + '</span>' : '');
-    }
+    if(ft) ft.innerHTML = '<a href="#top">Folio.Today</a>';
+    const from = (new URLSearchParams(location.search).get('from') || '').toLowerCase();
     const bk = document.getElementById('wxBack');
     if(bk){
-      if(back){ bk.href = back.href; bk.textContent = back.label; bk.style.display = ''; }
-      else { bk.style.display = 'none'; }
+      const label = from === 'wax' ? '← Folio.wax' : (from === 'invest' ? '← Folio.invest' : null);
+      if(label){
+        bk.textContent = label;
+        bk.href = '#';
+        bk.addEventListener('click', function(e){ e.preventDefault(); if(history.length > 1) history.back(); });
+        bk.style.display = '';
+      } else {
+        bk.style.display = 'none';
+      }
     }
   }
 
@@ -609,7 +599,8 @@
   }
   function digestItem(it){
     return '<a class="wx-digest-item" href="'+esc(it.url||'#')+'" target="_blank" rel="noopener"><h4>'+esc(it.h)+'</h4>'
-      + (it.p ? '<p>'+esc(it.p)+'</p>' : '')+'</a>';
+      + (it.p ? '<p>'+esc(it.p)+'</p>' : '')
+      + (it.src ? '<span class="src">'+esc(it.src)+'</span>' : '')+'</a>';
   }
 
   // ---- Einstieg: Leitartikel + Finanzen·Börse (6) + 2. Aufmacher + Kurz notiert ----
