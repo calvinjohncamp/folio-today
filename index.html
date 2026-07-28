@@ -95,10 +95,10 @@
   .wx-lead2 .body{columns:1;font-size:13.5px;line-height:1.58;color:var(--ink);}
   .wx-lead2 .body p{margin:0 0 12px;}
 
-  /* ---- "Kurz notiert": volle Breite, 6 Meldungen nebeneinander ---- */
+  /* ---- "Kurz notiert": volle Breite, 5 Meldungen elegant in einer Zeile ---- */
   .wx-kurz-section{margin-top:16px;scroll-margin-top:60px;}
-  .wx-kurz{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 26px;}
-  @media (max-width:560px){ .wx-kurz{grid-template-columns:repeat(2,1fr);} }
+  .wx-kurz{display:grid;grid-template-columns:repeat(5,1fr);gap:0 26px;}
+  @media (max-width:600px){ .wx-kurz{grid-template-columns:repeat(2,1fr);} }
   a.wx-kurz-item{display:block;padding:12px 0;border-top:1px solid var(--rule);}
   a.wx-kurz-item:hover h4{color:var(--flag);}
   .wx-kurz-item h4{font-family:var(--font-display);font-weight:700;font-size:14.5px;line-height:1.26;margin:0 0 4px;color:var(--ink);}
@@ -166,12 +166,13 @@
   .wx-rubric .dot{color:var(--flag);font-size:10px;}
 
   /* ================= BLÖCKE (3-Spalten-Fluss) ================= */
-  .wx-block{columns:3;column-gap:34px;column-rule:1px solid var(--rule);border-top:3px double var(--rule-strong);padding-top:26px;margin-top:34px;}
-  @media (max-width:940px){ .wx-block{columns:2;} }
-  @media (max-width:600px){ .wx-block{columns:1;} }
-  /* Rubrik-Kopf spannt die volle Breite → die 6 Artikel darunter starten in ALLEN
-     Spalten auf derselben Linie (sonst drückt der Kopf nur Spalte 1 nach unten). */
-  .wx-block .wx-rubric{column-span:all;}
+  /* Der Block selbst ist nur noch ein Container. Jede Rubrik bekommt ihren EIGENEN
+     Spalten-Fluss (.wx-digest-cols) — dadurch kann der erste Artikel der nächsten
+     Rubrik nie in die vorherige „hochlaufen" (iPad-/Safari-Bug mit column-span:all). */
+  .wx-block{border-top:3px double var(--rule-strong);padding-top:26px;margin-top:34px;}
+  .wx-digest-cols{columns:3;column-gap:34px;column-rule:1px solid var(--rule);}
+  @media (max-width:940px){ .wx-digest-cols{columns:2;} }
+  @media (max-width:600px){ .wx-digest-cols{columns:1;} }
   .wx-block .wx-rubric:first-child{margin-top:0;}
 
   a.wx-digest-item{display:block;break-inside:avoid;margin:0 0 12px;padding-bottom:11px;border-bottom:1px solid var(--rule);}
@@ -391,7 +392,7 @@
       </aside>
     </div>
 
-    <!-- Kurz notiert: übrige Top-Meldungen, volle Breite (6 nebeneinander) -->
+    <!-- Kurz notiert: übrige Top-Meldungen, volle Breite (5 nebeneinander) -->
     <section class="wx-kurz-section" id="wxKurz" style="display:none">
       <div class="wx-rubric"><span class="dot">◆</span>Kurz notiert</div>
       <div class="wx-kurz" id="wxKurzMount"></div>
@@ -665,9 +666,9 @@
     return html || '<p style="font-size:13px;color:var(--ink-faint)">Noch keine Ausgabe verfügbar.</p>';
   }
 
-  // ---- Kurz notiert: übrige Top-Meldungen (heisser[2..7]), volle Breite ----
+  // ---- Kurz notiert: übrige Top-Meldungen (heisser[2..6]), volle Breite, 5 nebeneinander ----
   function kurzHTML(H){
-    const kurz = (H||[]).slice(2,8).filter(x => x && x.h);
+    const kurz = (H||[]).slice(2,7).filter(x => x && x.h);
     if(!kurz.length) return '';
     return kurz.map(k =>
       '<a class="wx-kurz-item" href="'+esc(k.url||'#')+'" target="_blank" rel="noopener"><h4>'+esc(k.h)+'</h4>'
@@ -681,11 +682,11 @@
     if(!ressorts) return '';
     return block.keys.map(key => {
       const r = ressorts[key];
-      const items = (r && r.items) || [];
+      const items = ((r && r.items) || []).slice(0,6); // immer höchstens 6, nie 7
       if(!items.length) return '';
       const title = (r && r.title) || RESSORT_TITLE[key] || key;
       return '<div class="wx-rubric" id="r-'+key+'"><span class="dot">◆</span>'+esc(title)+'</div>'
-        + items.map(digestItem).join('');
+        + '<div class="wx-digest-cols">' + items.map(digestItem).join('') + '</div>';
     }).join('');
   }
 
